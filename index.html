@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AR Wedding Invitation</title>
+
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+</head>
+
+<body style="margin:0">
+
+<a-scene>
+
+<a-camera position="0 1.6 0"></a-camera>
+
+<a-video
+src="invitation.mp4"
+width="3"
+height="2"
+position="0 1.5 -3"
+autoplay
+loop="true">
+</a-video>
+
+<a-entity id="petals"></a-entity>
+
+</a-scene>
+
+<script>
+
+const scene = document.querySelector('#petals');
+
+for(let i=0;i<30;i++){
+
+let petal = document.createElement('a-image');
+
+petal.setAttribute('src','petal.png');
+
+petal.setAttribute('position',{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
+});
+
+petal.setAttribute('scale','0.2 0.2 0.2');
+
+petal.setAttribute('animation',{
+property:'position',
+to:`${(Math.random()*4)-2} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
+
+scene.appendChild(petal);
+
+}
+
+</script>
+
+</body>
+</html>
