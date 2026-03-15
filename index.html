@@ -27,10 +27,10 @@ color:white;
 border:none;
 border-radius:10px;
 ">
-Tap to Start Invitation
+Tap to Open Wedding Invitation
 </button>
 
-<a-scene>
+<a-scene background="color: #111">
 
 <a-assets>
 
@@ -52,7 +52,8 @@ crossorigin="anonymous">
 src="#invitevideo"
 width="1.5"
 height="2.7"
-position="0 1.6 -3">
+position="0 1.6 -3"
+material="shader: flat">
 </a-video>
 
 <a-entity id="petals"></a-entity>
@@ -69,7 +70,7 @@ let petal = document.createElement('a-image');
 
 petal.setAttribute('src','#petalimg');
 
-petal.setAttribute('scale','0.2 0.2 0.2');
+petal.setAttribute('scale','0.15 0.15 0.15');
 
 petal.setAttribute('position',{
 x:(Math.random()*4)-2,
@@ -79,7 +80,7 @@ z:-2-Math.random()*2
 
 petal.setAttribute('animation',{
 property:'position',
-to:`${(Math.random()*4)-2} -1 ${-2-Math.random()*2}`,
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
 dur:4000+Math.random()*2000,
 loop:true
 });
