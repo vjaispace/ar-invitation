@@ -24,8 +24,11 @@ autoplay
 loop
 muted
 playsinline
+preload="auto"
 crossorigin="anonymous">
 </video>
+
+<img id="petalimg" src="petal.png">
 
 </a-assets>
 
@@ -50,7 +53,7 @@ for(let i=0;i<35;i++){
 
 let petal = document.createElement('a-image');
 
-petal.setAttribute('src','petal.png');
+petal.setAttribute('src','#petalimg');
 
 petal.setAttribute('scale','0.2 0.2 0.2');
 
