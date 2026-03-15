@@ -14,6 +14,22 @@ body { margin:0; overflow:hidden; }
 
 <body>
 
+<button id="startButton" style="
+position:absolute;
+z-index:999;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:15px 25px;
+font-size:18px;
+background:#d4af37;
+color:white;
+border:none;
+border-radius:10px;
+">
+Tap to Start Invitation
+</button>
+
 <a-scene>
 
 <a-assets>
@@ -84,6 +100,22 @@ document.addEventListener("click", function () {
 
 window.addEventListener("load", function () {
     video.play();
+});
+
+</script>
+
+<script>
+
+const video = document.querySelector("#invitevideo");
+const button = document.querySelector("#startButton");
+
+button.addEventListener("click", () => {
+
+video.play();
+video.muted = false;
+
+button.style.display = "none";
+
 });
 
 </script>
