@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="utf-8">
 <title>AR Wedding Invitation</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aframe-orbit-controls@1.3.0/dist/aframe-orbit-controls.min.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
 
-#startButton{
+#playButton{
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-padding:15px 30px;
+padding:14px 28px;
 font-size:18px;
-background:#d4af37;
+background:#c59d5f;
 color:white;
 border:none;
 border-radius:8px;
@@ -28,7 +30,7 @@ z-index:999;
 
 <body>
 
-<button id="startButton">Tap to Start Invitation</button>
+<button id="playButton">Tap to Play Invitation</button>
 
 <a-scene>
 
@@ -46,11 +48,12 @@ crossorigin="anonymous">
 
 </a-assets>
 
-<a-camera position="0 1.6 0"></a-camera>
+<a-entity camera look-controls position="0 1.6 0"></a-entity>
 
-<!-- smaller portrait video -->
+<a-entity orbit-controls="target: #card; enableZoom: true"></a-entity>
+
 <a-video
-id="videoplane"
+id="card"
 src="#invitevideo"
 width="1.2"
 height="2.1"
@@ -65,7 +68,7 @@ material="shader: flat">
 <script>
 
 const video = document.querySelector("#invitevideo");
-const button = document.querySelector("#startButton");
+const button = document.querySelector("#playButton");
 
 button.onclick = function(){
 
@@ -76,7 +79,7 @@ button.style.display="none";
 
 const container = document.querySelector('#petals');
 
-for(let i=0;i<30;i++){
+for(let i=0;i<35;i++){
 
 let petal = document.createElement('a-image');
 
