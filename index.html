@@ -23,7 +23,9 @@ src="invitation.mp4"
 autoplay
 loop
 muted
-playsinline>
+playsinline
+preload="auto"
+crossorigin="anonymous">
 </video>
 
 <img id="petalimg" src="petal.png">
@@ -38,43 +40,43 @@ scale="1 1 1"
 animation="property: position; to: 0 1.8 -3; dur: 4000; dir: alternate; loop: true">
 
 <a-video
+id="invitePlane"
 src="#invitevideo"
-width="3.2"
-height="1.8"
+width="3"
+height="2"
 material="shader: flat">
 </a-video>
 
 </a-entity>
 
 <a-entity id="petals"></a-entity>
-<a-entity id="sparkles"></a-entity>
 
 </a-scene>
 
 <script>
 
-/* PETAL SHOWER */
+/* FLOWER PETALS */
 
 const petals=document.querySelector("#petals");
 
-for(let i=0;i<45;i++){
+for(let i=0;i<40;i++){
 
 let p=document.createElement("a-image");
 
 p.setAttribute("src","#petalimg");
 
-p.setAttribute("scale","0.18 0.18 0.18");
+p.setAttribute("scale","0.2 0.2 0.2");
 
 p.setAttribute("position",{
 x:(Math.random()*4)-2,
 y:3+Math.random()*2,
-z:-1-Math.random()*3
+z:-2-Math.random()*2
 });
 
 p.setAttribute("animation",{
 property:"position",
-to:`${(Math.random()*4)-2} -1 ${-1-Math.random()*3}`,
-dur:3500+Math.random()*2500,
+to:`${(Math.random()*4)-2} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
 loop:true
 });
 
@@ -82,37 +84,6 @@ p.setAttribute("animation__spin",
 "property: rotation; to: 0 360 360; dur: 3000; loop: true");
 
 petals.appendChild(p);
-
-}
-
-/* GOLDEN SPARKLES */
-
-const sparkles=document.querySelector("#sparkles");
-
-for(let i=0;i<30;i++){
-
-let s=document.createElement("a-sphere");
-
-s.setAttribute("radius","0.03");
-
-s.setAttribute("color","#FFD700");
-
-s.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:Math.random()*2+1,
-z:-2-Math.random()*2
-});
-
-s.setAttribute("animation",{
-property:"scale",
-from:"0.2 0.2 0.2",
-to:"0.6 0.6 0.6",
-dur:2000,
-dir:"alternate",
-loop:true
-});
-
-sparkles.appendChild(s);
 
 }
 
@@ -154,18 +125,23 @@ startDist=getDistance(e.touches[0],e.touches[1]);
 
 document.addEventListener("touchmove",e=>{
 
+/* ROTATE */
+
 if(e.touches.length==1){
 
 let dx=e.touches[0].clientX-startX;
 let dy=e.touches[0].clientY-startY;
 
 object.object3D.rotation.y+=dx*0.005;
+
 object.object3D.position.y+=dy*-0.002;
 
 startX=e.touches[0].clientX;
 startY=e.touches[0].clientY;
 
 }
+
+/* ZOOM */
 
 if(e.touches.length==2){
 
@@ -179,11 +155,28 @@ object.setAttribute("scale",`${scale} ${scale} ${scale}`);
 
 });
 
-document.addEventListener("touchend",()=>{
+document.addEventListener("touchend",e=>{
 
 let s=object.getAttribute("scale");
 
 currentScale=s.x;
+
+});
+
+<script>
+
+const video = document.querySelector("#invitevideo");
+const plane = document.querySelector("#invitePlane");
+
+video.addEventListener("loadedmetadata", () => {
+
+let ratio = video.videoWidth / video.videoHeight;
+
+let width = 3;
+let height = width / ratio;
+
+plane.setAttribute("width", width);
+plane.setAttribute("height", height);
 
 });
 
