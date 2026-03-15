@@ -24,18 +24,23 @@ autoplay
 loop
 muted
 playsinline
+webkit-playsinline
 crossorigin="anonymous">
 </video>
+
+<img id="petal" src="petal.png">
 
 </a-assets>
 
 <a-camera position="0 1.6 0"></a-camera>
 
+<!-- Portrait video -->
 <a-video
 src="#invitevideo"
-width="3.2"
-height="1.8"
-position="0 1.6 -3">
+width="1.8"
+height="3.2"
+position="0 1.6 -3"
+material="shader: flat">
 </a-video>
 
 <a-entity id="petals"></a-entity>
@@ -46,13 +51,13 @@ position="0 1.6 -3">
 
 const container = document.querySelector('#petals');
 
-for(let i=0;i<35;i++){
+for(let i=0;i<30;i++){
 
 let petal = document.createElement('a-image');
 
-petal.setAttribute('src','petal.png');
+petal.setAttribute('src','#petal');
 
-petal.setAttribute('scale','0.2 0.2 0.2');
+petal.setAttribute('scale','0.25 0.25 0.25');
 
 petal.setAttribute('position',{
 x:(Math.random()*4)-2,
