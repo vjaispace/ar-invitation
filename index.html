@@ -64,7 +64,7 @@ crossorigin="anonymous">
 
 <a-camera position="0 1.6 0"></a-camera>
 
-<!-- CONTAINER FOR INTERACTION -->
+<!-- INTERACTION CONTAINER -->
 
 <a-entity id="container" position="0 1.6 -3">
 
@@ -85,7 +85,7 @@ material="shader: flat">
 
 /* FLOWER PETALS */
 
-const container = document.querySelector('#petals');
+const petalContainer = document.querySelector('#petals');
 
 for(let i=0;i<35;i++){
 
@@ -108,7 +108,7 @@ dur:4000+Math.random()*2000,
 loop:true
 });
 
-container.appendChild(petal);
+petalContainer.appendChild(petal);
 
 }
 
@@ -200,12 +200,8 @@ object.setAttribute("scale", scale + " " + scale + " " + scale);
 
 });
 
-document.addEventListener("touchend", () => {
-
-let s = object.getAttribute("scale");
-currentScale = s.x;
-
-});
+document.addEventListener("touchend", () => {let s = object.getAttribute("scale");
+currentScale = s.x;});
 
 </script>
 
