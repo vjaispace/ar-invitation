@@ -41,8 +41,8 @@ animation="property: position; to: 0 1.8 -3; dur: 4000; dir: alternate; loop: tr
 
 <a-video
 src="#invitevideo"
-width="3"
-height="2"
+width="1.5"
+height="2.7"
 material="shader: flat">
 </a-video>
 
@@ -54,112 +54,61 @@ material="shader: flat">
 
 <script>
 
-/* FLOWER PETALS */
+const container = document.querySelector('#petals');
 
-const petals=document.querySelector("#petals");
+for(let i=0;i<35;i++){
 
-for(let i=0;i<40;i++){
+let petal = document.createElement('a-image');
 
-let p=document.createElement("a-image");
+petal.setAttribute('src','#petalimg');
 
-p.setAttribute("src","#petalimg");
+petal.setAttribute('scale','0.15 0.15 0.15');
 
-p.setAttribute("scale","0.2 0.2 0.2");
-
-p.setAttribute("position",{
+petal.setAttribute('position',{
 x:(Math.random()*4)-2,
 y:3+Math.random()*2,
 z:-2-Math.random()*2
 });
 
-p.setAttribute("animation",{
-property:"position",
+petal.setAttribute('animation',{
+property:'position',
 to:`${(Math.random()*4)-2} -1 ${-2-Math.random()*2}`,
 dur:4000+Math.random()*2000,
 loop:true
 });
 
-p.setAttribute("animation__spin",
-"property: rotation; to: 0 360 360; dur: 3000; loop: true");
+petal.setAttribute('animation__rotate',
+'property: rotation; to: 0 360 360; dur: 3000; loop: true');
 
-petals.appendChild(p);
+container.appendChild(petal);}
 
-}
+const video = document.querySelector("#invitevideo");
+const plane = document.querySelector("#invitePlane");
 
+video.addEventListener("loadedmetadata", () => {
 
-/* TOUCH CONTROLS */
+let ratio = video.videoWidth / video.videoHeight;
 
-const object=document.querySelector("#container");
+let width = 3;
+let height = width / ratio;
 
-let startX=0;
-let startY=0;
-let startDist=0;
-let currentScale=1;
-
-function getDistance(t1,t2){
-
-let dx=t1.clientX-t2.clientX;
-let dy=t1.clientY-t2.clientY;
-
-return Math.sqrt(dx*dx+dy*dy);
-
-}
-
-document.addEventListener("touchstart",e=>{
-
-if(e.touches.length==1){
-
-startX=e.touches[0].clientX;
-startY=e.touches[0].clientY;
-
-}
-
-if(e.touches.length==2){
-
-startDist=getDistance(e.touches[0],e.touches[1]);
-
-}
+plane.setAttribute("width", width);
+plane.setAttribute("height", height);
 
 });
 
-document.addEventListener("touchmove",e=>{
+</script>
 
-/* ROTATE */
+<script>
 
-if(e.touches.length==1){
+const video = document.querySelector("#invitevideo");
 
-let dx=e.touches[0].clientX-startX;
-let dy=e.touches[0].clientY-startY;
-
-object.object3D.rotation.y+=dx*0.005;
-
-object.object3D.position.y+=dy*-0.002;
-
-startX=e.touches[0].clientX;
-startY=e.touches[0].clientY;
-
-}
-
-/* ZOOM */
-
-if(e.touches.length==2){
-
-let dist=getDistance(e.touches[0],e.touches[1]);
-
-let scale=currentScale*(dist/startDist);
-
-object.setAttribute("scale",`${scale} ${scale} ${scale}`);
-
-}
-
+document.addEventListener("click", function () {
+    video.play();
 });
 
-document.addEventListener("touchend",e=>{
-
-let s=object.getAttribute("scale");
-
-currentScale=s.x;
-
+window.addEventListener("load", function () {
+    video.play();
 });
 
 </script>
