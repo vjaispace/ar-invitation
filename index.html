@@ -43,18 +43,18 @@ Tap to Open Invitation
 
 <!-- SCENE -->
 
-<a-scene background="color: black">
+<a-scene id="scene" style="display:none;" background="color: black">
 
 <a-assets>
 
 <video id="video"
 src="invitation.mp4"
-autoplay
 loop
 muted
 playsinline
-preload="auto"
-crossorigin="anonymous">
+webkit-playsinline
+crossorigin="anonymous"
+preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
@@ -80,20 +80,32 @@ material="shader: flat">
 
 <script>
 
-/* VIDEO CONTROL */
-
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
 const btn = document.querySelector("#startBtn");
+const scene = document.querySelector("#scene");
 
-btn.onclick = () => {
+btn.onclick = async () => {
 
-video.muted = false;
-video.play();
+  overlay.style.display = "none";
+  scene.style.display = "block";
 
-overlay.style.display = "none";
+  try {
+    video.muted = true;
+    await video.play();
+
+    // Small delay improves Safari rendering
+    setTimeout(() => {
+      video.muted = false;
+    }, 500);
+
+  } catch (e) {
+    alert("Tap again to start video");
+  }
 
 };
+
+</script>
 
 /* PETALS */
 
