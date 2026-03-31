@@ -8,15 +8,8 @@
 
 <style>
 body { margin:0; overflow:hidden; }
-</style>
 
-</head>
-
-<body>
-
-<!-- START BUTTON -->
-
-<div id="overlay" style="
+#overlay{
 position:fixed;
 top:0;
 left:0;
@@ -27,33 +20,45 @@ justify-content:center;
 align-items:center;
 background:black;
 z-index:9999;
-">
+}
 
-<button id="startBtn" style="
+#startBtn{
 padding:18px 30px;
 font-size:18px;
 background:#d4af37;
 color:white;
 border:none;
-border-radius:10px;">
-Tap to Open Invitation
-</button>
+border-radius:10px;
+}
+</style>
 
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+
+<div id="overlay">
+<button id="startBtn">Tap to Open Invitation</button>
 </div>
 
-<!-- SCENE -->
+<!-- AFRAME SCENE -->
 
-<a-scene background="color: black">
+<a-scene
+embedded
+vr-mode-ui="enabled: false"
+device-orientation-permission-ui="enabled: true"
+renderer="logarithmicDepthBuffer: true;"
+>
 
 <a-assets>
 
 <video id="video"
 src="invitation.mp4"
-autoplay
 loop
 muted
 playsinline
-preload="auto"
+webkit-playsinline
 crossorigin="anonymous">
 </video>
 
@@ -61,18 +66,22 @@ crossorigin="anonymous">
 
 </a-assets>
 
-<a-camera position="0 1.6 0"></a-camera>
+<!-- CAMERA -->
 
-<a-entity id="container" position="0 1.6 -3">
+<a-entity camera look-controls="enabled: true"></a-entity>
+
+<!-- VIDEO IN FRONT -->
 
 <a-video
+id="mainVideo"
 src="#video"
+position="0 0 -2"
 width="1.5"
 height="2.7"
 material="shader: flat">
 </a-video>
 
-</a-entity>
+<!-- PETALS -->
 
 <a-entity id="petals"></a-entity>
 
@@ -80,22 +89,30 @@ material="shader: flat">
 
 <script>
 
-/* VIDEO CONTROL */
+/* BUTTON + CAMERA START */
 
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
 const btn = document.querySelector("#startBtn");
 
-btn.onclick = () => {
-
-video.muted = false;
-video.play();
+btn.onclick = async () => {
 
 overlay.style.display = "none";
 
+/* START CAMERA (iPhone fix) */
+try {
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+} catch(e) {
+  alert("Please allow camera access");
+}
+
+/* START VIDEO */
+video.muted = false;
+video.play();
+
 };
 
-/* PETALS */
+/* PETALS EFFECT */
 
 const petals = document.querySelector("#petals");
 
