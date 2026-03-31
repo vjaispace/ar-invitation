@@ -8,8 +8,15 @@
 
 <style>
 body { margin:0; overflow:hidden; }
+</style>
 
-#overlay{
+</head>
+
+<body>
+
+<!-- START BUTTON -->
+
+<div id="overlay" style="
 position:fixed;
 top:0;
 left:0;
@@ -20,45 +27,33 @@ justify-content:center;
 align-items:center;
 background:black;
 z-index:9999;
-}
+">
 
-#startBtn{
+<button id="startBtn" style="
 padding:18px 30px;
 font-size:18px;
 background:#d4af37;
 color:white;
 border:none;
-border-radius:10px;
-}
-</style>
+border-radius:10px;">
+Tap to Open Invitation
+</button>
 
-</head>
-
-<body>
-
-<!-- START SCREEN -->
-
-<div id="overlay">
-<button id="startBtn">Tap to Open Invitation</button>
 </div>
 
-<!-- AFRAME SCENE -->
+<!-- SCENE -->
 
-<a-scene
-embedded
-vr-mode-ui="enabled: false"
-device-orientation-permission-ui="enabled: true"
-renderer="logarithmicDepthBuffer: true;"
->
+<a-scene background="color: black">
 
 <a-assets>
 
 <video id="video"
 src="invitation.mp4"
+autoplay
 loop
 muted
 playsinline
-webkit-playsinline
+preload="auto"
 crossorigin="anonymous">
 </video>
 
@@ -66,22 +61,18 @@ crossorigin="anonymous">
 
 </a-assets>
 
-<!-- CAMERA -->
+<a-camera position="0 1.6 0"></a-camera>
 
-<a-entity camera look-controls="enabled: true"></a-entity>
-
-<!-- VIDEO IN FRONT -->
+<a-entity id="container" position="0 1.6 -3">
 
 <a-video
-id="mainVideo"
 src="#video"
-position="0 0 -2"
 width="1.5"
 height="2.7"
 material="shader: flat">
 </a-video>
 
-<!-- PETALS -->
+</a-entity>
 
 <a-entity id="petals"></a-entity>
 
@@ -89,30 +80,22 @@ material="shader: flat">
 
 <script>
 
-/* BUTTON + CAMERA START */
+/* VIDEO CONTROL */
 
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
 const btn = document.querySelector("#startBtn");
 
-btn.onclick = async () => {
+btn.onclick = () => {
 
-overlay.style.display = "none";
-
-/* START CAMERA (iPhone fix) */
-try {
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-} catch(e) {
-  alert("Please allow camera access");
-}
-
-/* START VIDEO */
 video.muted = false;
 video.play();
 
+overlay.style.display = "none";
+
 };
 
-/* PETALS EFFECT */
+/* PETALS */
 
 const petals = document.querySelector("#petals");
 
