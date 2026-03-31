@@ -140,5 +140,13 @@ petals.appendChild(p);
 
 </script>
 
+<script>
+const isWebXRSupported = navigator.xr !== undefined;
+
+if (!isWebXRSupported) {
+  alert("AR mode is limited on this browser. Opening alternative view.");
+}
+</script>
+
 </body>
 </html>
