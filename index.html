@@ -43,13 +43,9 @@ Tap to Open Invitation
 
 <!-- SCENE -->
 
-<a-scene id="scene" style="display:none;" background="color: black">
+<a-scene id="scene" style="display:none;">
 
 <a-assets>
-
-<a-sky id="sky" color="#000"></a-sky>
-
-<a-entity id="stars"></a-entity>
 
 <video id="video"
 src="invitation.mp4"
@@ -65,8 +61,16 @@ preload="auto">
 
 </a-assets>
 
+<!-- SKY BACKGROUND -->
+<a-sky color="#000"></a-sky>
+
+<!-- TWINKLING STARS -->
+<a-entity id="stars"></a-entity>
+
+<!-- CAMERA -->
 <a-camera position="0 1.6 0"></a-camera>
 
+<!-- VIDEO -->
 <a-entity id="container" position="0 1.6 -3">
 
 <a-video
@@ -78,6 +82,7 @@ material="shader: flat">
 
 </a-entity>
 
+<!-- PETALS -->
 <a-entity id="petals"></a-entity>
 
 </a-scene>
@@ -98,7 +103,6 @@ btn.onclick = async () => {
     video.muted = true;
     await video.play();
 
-    // Small delay improves Safari rendering
     setTimeout(() => {
       video.muted = false;
     }, 500);
@@ -109,52 +113,7 @@ btn.onclick = async () => {
 
 };
 
-<script>
-
-/* PETALS */
-
-const petals = document.querySelector("#petals");
-
-for(let i=0;i<35;i++){
-
-let p = document.createElement("a-image");
-
-p.setAttribute("src","#petal");
-p.setAttribute("scale","0.15 0.15 0.15");
-
-p.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:3+Math.random()*2,
-z:-2-Math.random()*2
-});
-
-p.setAttribute("animation",{
-property:"position",
-to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-dur:4000+Math.random()*2000,
-loop:true
-});
-
-p.setAttribute("animation__spin",
-"property: rotation; to: 0 360 360; dur: 3000; loop: true");
-
-petals.appendChild(p);
-
-}
-
-</script>
-
-<script>
-const isWebXRSupported = navigator.xr !== undefined;
-
-if (!isWebXRSupported) {
-  alert("AR mode is limited on this browser. Opening alternative view.");
-}
-</script>
-
-<script>
-
-/* STARS BACKGROUND */
+/* ===== TWINKLING STARS ===== */
 
 const stars = document.querySelector("#stars");
 
@@ -182,6 +141,37 @@ loop:true
 });
 
 stars.appendChild(star);
+
+}
+
+/* ===== PETALS ===== */
+
+const petals = document.querySelector("#petals");
+
+for(let i=0;i<35;i++){
+
+let p = document.createElement("a-image");
+
+p.setAttribute("src","#petal");
+p.setAttribute("scale","0.15 0.15 0.15");
+
+p.setAttribute("position",{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
+});
+
+p.setAttribute("animation",{
+property:"position",
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
+
+p.setAttribute("animation__spin",
+"property: rotation; to: 0 360 360; dur: 3000; loop: true");
+
+petals.appendChild(p);
 
 }
 
