@@ -7,90 +7,94 @@
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
 <style>
-body { margin:0; overflow:hidden; background:black; }
+body { margin:0; overflow:hidden; }
 
-#overlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-background:black;
-z-index:9999;
+/* ROUND BUTTON STYLE */
+.btn-circle {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  font-size:16px;
+  border:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 
-#startBtn{
-padding:18px 30px;
-font-size:18px;
-background:#d4af37;
-color:white;
-border:none;
-border-radius:10px;
+/* AR BUTTON */
+#arBtn {
+  background:#d4af37;
+  color:white;
+  box-shadow:0 0 20px rgba(212,175,55,0.6);
 }
 
-/* Fallback video */
-#fallbackVideo{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:80%;
-display:none;
-z-index:5;
+/* WEBSITE BUTTON */
+#webBtn {
+  background:white;
+  color:black;
+  box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
+
 </style>
 
 </head>
 
 <body>
 
-<!-- START SCREEN -->
-<div id="overlay">
-<button id="startBtn">Tap to Open Invitation</button>
+<!-- OVERLAY WITH TWO BUTTONS -->
+
+<div id="overlay" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:9999;
+gap:20px;
+">
+
+<button id="arBtn" class="btn-circle">AR</button>
+<button id="webBtn" class="btn-circle">Website</button>
+
 </div>
 
-<!-- FALLBACK VIDEO (Safari etc) -->
-<video id="fallbackVideo"
-src="invitation.mp4"
-loop
-muted
-playsinline
-webkit-playsinline>
-</video>
+<!-- SCENE -->
 
-<!-- A-FRAME SCENE (for WebXR browsers) -->
-<a-scene id="scene"
-embedded
-vr-mode-ui="enabled: true"
-device-orientation-permission-ui="enabled: true"
-style="display:none;"
->
+<a-scene id="scene" style="display:none;" background="color: black">
 
 <a-assets>
+
 <video id="video"
 src="invitation.mp4"
 loop
 muted
 playsinline
 webkit-playsinline
-crossorigin="anonymous">
+crossorigin="anonymous"
+preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
+
 </a-assets>
 
 <a-camera position="0 1.6 0"></a-camera>
 
-<a-entity position="0 1.6 -3">
+<a-entity id="container" position="0 1.6 -3">
+
 <a-video
 src="#video"
 width="1.5"
 height="2.7"
 material="shader: flat">
 </a-video>
+
 </a-entity>
 
 <a-entity id="petals"></a-entity>
@@ -99,61 +103,45 @@ material="shader: flat">
 
 <script>
 
-const btn = document.getElementById("startBtn");
-const overlay = document.getElementById("overlay");
+/* ELEMENTS */
 
-const scene = document.getElementById("scene");
-const video = document.getElementById("video");
-const fallbackVideo = document.getElementById("fallbackVideo");
+const video = document.querySelector("#video");
+const overlay = document.querySelector("#overlay");
+const scene = document.querySelector("#scene");
 
-/* Detect WebXR */
-const isWebXRSupported = navigator.xr !== undefined;
+const arBtn = document.querySelector("#arBtn");
+const webBtn = document.querySelector("#webBtn");
 
-btn.onclick = async () => {
+/* AR BUTTON */
+
+arBtn.onclick = async () => {
 
   overlay.style.display = "none";
+  scene.style.display = "block";
 
-  if (isWebXRSupported) {
+  try {
+    video.muted = true;
+    await video.play();
 
-    /* ===== ANDROID / CHROME AR ===== */
+    setTimeout(() => {
+      video.muted = false;
+    }, 500);
 
-    scene.style.display = "block";
-
-    try {
-      video.muted = true;
-      await video.play();
-
-      setTimeout(() => {
-        video.muted = false;
-      }, 500);
-
-    } catch (e) {
-      alert("Tap again to start AR");
-    }
-
-  } else {
-
-    /* ===== SAFARI / FALLBACK ===== */
-
-    fallbackVideo.style.display = "block";
-
-    try {
-      fallbackVideo.muted = true;
-      await fallbackVideo.play();
-
-      setTimeout(() => {
-        fallbackVideo.muted = false;
-      }, 500);
-
-    } catch (e) {
-      alert("Tap again to play video");
-    }
-
+  } catch (e) {
+    alert("Tap again to start video");
   }
 
 };
 
-/* PETALS (only for A-Frame scene) */
+/* WEBSITE BUTTON */
+
+webBtn.onclick = () => {
+
+  window.open("https://your-website-link.com", "_blank");
+
+};
+
+/* PETALS EFFECT (FIXED POSITION) */
 
 const petals = document.querySelector("#petals");
 
