@@ -47,6 +47,10 @@ Tap to Open Invitation
 
 <a-assets>
 
+<a-sky id="sky" color="#000"></a-sky>
+
+<a-entity id="stars"></a-entity>
+
 <video id="video"
 src="invitation.mp4"
 loop
@@ -105,7 +109,7 @@ btn.onclick = async () => {
 
 };
 
-</script>
+<script>
 
 /* PETALS */
 
@@ -146,6 +150,41 @@ const isWebXRSupported = navigator.xr !== undefined;
 if (!isWebXRSupported) {
   alert("AR mode is limited on this browser. Opening alternative view.");
 }
+</script>
+
+<script>
+
+/* STARS BACKGROUND */
+
+const stars = document.querySelector("#stars");
+
+for(let i=0;i<120;i++){
+
+let star = document.createElement("a-sphere");
+
+star.setAttribute("radius","0.01");
+
+star.setAttribute("position",{
+x:(Math.random()*10)-5,
+y:(Math.random()*6),
+z:(Math.random()*-10)
+});
+
+star.setAttribute("material","color: white; emissive: white;");
+
+star.setAttribute("animation",{
+property:"material.emissiveIntensity",
+from:0.2,
+to:1,
+dur:1000+Math.random()*2000,
+dir:"alternate",
+loop:true
+});
+
+stars.appendChild(star);
+
+}
+
 </script>
 
 </body>
