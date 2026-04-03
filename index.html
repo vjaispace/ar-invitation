@@ -5,10 +5,10 @@
 <title>AR Wedding Invitation</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
+
 #overlay{
 position:fixed;
 top:0;
@@ -21,6 +21,7 @@ align-items:center;
 background:black;
 z-index:9999;
 }
+
 #startBtn{
 padding:18px 30px;
 font-size:18px;
@@ -42,8 +43,8 @@ border-radius:10px;
 id="scene"
 embedded
 xr-mode-ui="enabled: true"
-renderer="logarithmicDepthBuffer: true;"
 vr-mode-ui="enabled: true"
+renderer="logarithmicDepthBuffer: true;"
 style="display:none;"
 >
 
@@ -59,23 +60,18 @@ crossorigin="anonymous">
 <img id="petal" src="petal.png">
 </a-assets>
 
-<!-- SKY -->
 <a-sky id="sky" color="#000"></a-sky>
 <a-entity id="stars"></a-entity>
 
-<!-- CAMERA -->
 <a-camera position="0 1.6 0"></a-camera>
 
-<!-- MAIN OBJECT (PLACED AFTER TAP) -->
 <a-entity id="placement" visible="false">
-
-<a-video id="mainVideo"
+<a-video
 src="#video"
 width="1.5"
 height="2.7"
 material="shader: flat">
 </a-video>
-
 </a-entity>
 
 <a-entity id="petals"></a-entity>
@@ -85,124 +81,117 @@ material="shader: flat">
 <script>
 
 const video = document.querySelector("#video");
-const overlay = document.querySelector("#overlay");
 const btn = document.querySelector("#startBtn");
+const overlay = document.querySelector("#overlay");
 const scene = document.querySelector("#scene");
 const placement = document.querySelector("#placement");
 
 /* START */
 
 btn.onclick = async () => {
-  overlay.style.display = "none";
-  scene.style.display = "block";
 
-  try {
-    video.muted = true;
-    await video.play();
+overlay.style.display="none";
+scene.style.display="block";
 
-    setTimeout(()=>{ video.muted=false; },500);
-  } catch(e){}
+try{
+video.muted=true;
+await video.play();
+
+setTimeout(()=>{ video.muted=false; },500);
+
+}catch(e){}
+
 };
 
 /* HIDE SKY IN AR */
 
 scene.addEventListener("enter-vr", () => {
-  if (scene.is("ar-mode")) {
-    document.querySelector("#sky").setAttribute("visible","false");
-    document.querySelector("#stars").setAttribute("visible","false");
-  }
+if(scene.is("ar-mode")){
+document.querySelector("#sky").setAttribute("visible","false");
+document.querySelector("#stars").setAttribute("visible","false");
+}
 });
 
 /* TAP TO PLACE */
 
-scene.addEventListener("click", function () {
+scene.addEventListener("click", () => {
 
-  if (!scene.is("ar-mode")) return;
+if(!scene.is("ar-mode")) return;
 
-  const cam = document.querySelector("[camera]");
-  const direction = new THREE.Vector3();
-  cam.object3D.getWorldDirection(direction);
+const cam = document.querySelector("[camera]").object3D;
 
-  const position = cam.object3D.position.clone();
-  position.add(direction.multiplyScalar(2));
+const direction = new THREE.Vector3();
+cam.getWorldDirection(direction);
 
-  placement.setAttribute("position", position);
-  placement.setAttribute("visible", true);
+const position = cam.position.clone();
+position.add(direction.multiplyScalar(2));
+
+placement.setAttribute("position", position);
+placement.setAttribute("visible", true);
 
 });
 
-/* ===== GESTURES ===== */
+/* ROTATE */
 
-let isDragging = false;
-let previousX = 0;
+let dragging=false;
+let prevX=0;
 
-window.addEventListener("touchstart", (e)=>{
-  if(e.touches.length==1){
-    isDragging=true;
-    previousX=e.touches[0].clientX;
-  }
+window.addEventListener("touchstart",(e)=>{
+if(e.touches.length===1){
+dragging=true;
+prevX=e.touches[0].clientX;
+}
 });
 
-window.addEventListener("touchmove", (e)=>{
-  if(!isDragging) return;
+window.addEventListener("touchmove",(e)=>{
+if(!dragging) return;
 
-  let deltaX = e.touches[0].clientX - previousX;
-  previousX = e.touches[0].clientX;
+let dx = e.touches[0].clientX - prevX;
+prevX = e.touches[0].clientX;
 
-  let rot = placement.getAttribute("rotation");
-  rot.y += deltaX * 0.5;
+let rot = placement.getAttribute("rotation");
+rot.y += dx*0.5;
 
-  placement.setAttribute("rotation", rot);
+placement.setAttribute("rotation", rot);
 });
 
-window.addEventListener("touchend", ()=>{
-  isDragging=false;
+window.addEventListener("touchend",()=> dragging=false);
+
+/* ZOOM */
+
+let startDist=null;
+
+window.addEventListener("touchmove",(e)=>{
+if(e.touches.length===2){
+
+let dx=e.touches[0].clientX-e.touches[1].clientX;
+let dy=e.touches[0].clientY-e.touches[1].clientY;
+let dist=Math.sqrt(dx*dx+dy*dy);
+
+if(!startDist) startDist=dist;
+
+let scale = dist/startDist;
+
+placement.setAttribute("scale",{x:scale,y:scale,z:scale});
+}
 });
 
-/* PINCH ZOOM */
-
-let initialDistance = null;
-
-window.addEventListener("touchmove", (e)=>{
-  if(e.touches.length==2){
-
-    let dx = e.touches[0].clientX - e.touches[1].clientX;
-    let dy = e.touches[0].clientY - e.touches[1].clientY;
-    let distance = Math.sqrt(dx*dx+dy*dy);
-
-    if(!initialDistance) initialDistance = distance;
-
-    let scale = placement.getAttribute("scale");
-
-    let factor = distance / initialDistance;
-
-    placement.setAttribute("scale", {
-      x: factor,
-      y: factor,
-      z: factor
-    });
-
-  }
-});
-
-window.addEventListener("touchend", ()=>{
-  initialDistance=null;
-});
+window.addEventListener("touchend",()=> startDist=null);
 
 /* STARS */
 
 const stars = document.querySelector("#stars");
 
 for(let i=0;i<120;i++){
-let star = document.createElement("a-sphere");
-star.setAttribute("radius","0.01");
-star.setAttribute("position",{
+let s=document.createElement("a-sphere");
+s.setAttribute("radius","0.01");
+s.setAttribute("position",{
 x:(Math.random()*10)-5,
 y:(Math.random()*6),
 z:(Math.random()*-10)
 });
-star.setAttribute("material","color:white; emissive:white;");
-star.setAttribute("animation",{
+s.setAttribute("material","color:white; emissive:white;");
+s.setAttribute("animation",{
 property:"material.emissiveIntensity",
 from:0.2,
 to:1,
@@ -210,7 +199,7 @@ dur:1000+Math.random()*2000,
 dir:"alternate",
 loop:true
 });
-stars.appendChild(star);
+stars.appendChild(s);
 }
 
 /* PETALS */
@@ -218,7 +207,8 @@ stars.appendChild(star);
 const petals = document.querySelector("#petals");
 
 for(let i=0;i<35;i++){
-let p = document.createElement("a-image");
+let p=document.createElement("a-image");
+
 p.setAttribute("src","#petal");
 p.setAttribute("scale","0.15 0.15 0.15");
 
