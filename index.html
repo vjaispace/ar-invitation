@@ -66,10 +66,7 @@ gap:20px;
 
 <!-- AR SCENE -->
 
-<a-scene 
-  id="scene"
-  embedded
-  arjs="sourceType: webcam; debugUIEnabled: false;">
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
 
 <a-assets>
 
@@ -121,94 +118,57 @@ position="0 1 0">
 
 <script>
 
-/* ELEMENTS */
+document.addEventListener("DOMContentLoaded", () => {
 
-const video = document.querySelector("#video");
-const overlay = document.querySelector("#overlay");
-const scene = document.querySelector("#scene");
+  const video = document.querySelector("#video");
+  const overlay = document.querySelector("#overlay");
+  const arBtn = document.querySelector("#arBtn");
+  const webBtn = document.querySelector("#webBtn");
 
-const arBtn = document.querySelector("#arBtn");
-const webBtn = document.querySelector("#webBtn");
+  const markerTamil = document.querySelector("#markerTamil");
+  const markerEnglish = document.querySelector("#markerEnglish");
 
-const markerTamil = document.querySelector("#markerTamil");
-const markerEnglish = document.querySelector("#markerEnglish");
+  let isPlaying = false;
 
-let isPlaying = false;
+  /* AR BUTTON */
+  arBtn.onclick = () => {
+    overlay.style.display = "none";
+  };
 
-/* AR BUTTON */
+  /* WEBSITE BUTTON */
+  webBtn.onclick = () => {
+    window.open("https://rweds.my.canva.site/", "_blank");
+  };
 
-arBtn.onclick = () => {
-
-  overlay.style.display = "none";
-
-
-};
-
-/* WEBSITE BUTTON */
-
-webBtn.onclick = () => {
-  window.open("https://s-weds-r.my.canva.site/", "_blank");
-};
-
-/* VIDEO CONTROL */
-
-function playVideo() {
-  if (!isPlaying) {
-    video.muted = true;
-    video.play().catch(()=>{});
-    setTimeout(()=>{ video.muted = false; }, 500);
-    isPlaying = true;
+  /* SAFETY CHECK */
+  if (!markerTamil || !markerEnglish) {
+    console.log("Markers not found");
+    return;
   }
-}
 
-function pauseVideo() {
-  video.pause();
-  isPlaying = false;
-}
+  /* VIDEO CONTROL */
 
-markerTamil.addEventListener("markerFound", playVideo);
-markerEnglish.addEventListener("markerFound", playVideo);
-
-markerTamil.addEventListener("markerLost", pauseVideo);
-markerEnglish.addEventListener("markerLost", pauseVideo);
-
-/* PETALS FUNCTION */
-
-function createPetals(containerId) {
-
-  const container = document.querySelector(containerId);
-
-  for(let i=0;i<35;i++){
-
-    let p = document.createElement("a-image");
-
-    p.setAttribute("src","#petal");
-    p.setAttribute("scale","0.15 0.15 0.15");
-
-    p.setAttribute("position",{
-      x:(Math.random()*4)-2,
-      y:3+Math.random()*2,
-      z:-2-Math.random()*2
-    });
-
-    p.setAttribute("animation",{
-      property:"position",
-      to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-      dur:4000+Math.random()*2000,
-      loop:true
-    });
-
-    p.setAttribute("animation__spin",
-    "property: rotation; to: 0 360 360; dur: 3000; loop: true");
-
-    container.appendChild(p);
+  function playVideo() {
+    if (!isPlaying) {
+      video.muted = true;
+      video.play().catch(()=>{});
+      setTimeout(()=>{ video.muted = false; }, 500);
+      isPlaying = true;
+    }
   }
-}
 
-/* CREATE PETALS */
+  function pauseVideo() {
+    video.pause();
+    isPlaying = false;
+  }
 
-createPetals("#petalsTamil");
-createPetals("#petalsEnglish");
+  markerTamil.addEventListener("markerFound", playVideo);
+  markerEnglish.addEventListener("markerFound", playVideo);
+
+  markerTamil.addEventListener("markerLost", pauseVideo);
+  markerEnglish.addEventListener("markerLost", pauseVideo);
+
+});
 
 </script>
 
