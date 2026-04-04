@@ -5,7 +5,6 @@
 <title>AR Wedding Invitation</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
@@ -36,13 +35,14 @@ body { margin:0; overflow:hidden; }
   color:black;
   box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
+
 </style>
 
 </head>
 
 <body>
 
-<!-- OVERLAY -->
+<!-- OVERLAY WITH TWO BUTTONS -->
 
 <div id="overlay" style="
 position:fixed;
@@ -64,9 +64,9 @@ gap:20px;
 
 </div>
 
-<!-- AR SCENE -->
+<!-- SCENE -->
 
-<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+<a-scene id="scene" style="display:none;" background="color: black">
 
 <a-assets>
 
@@ -77,101 +77,102 @@ muted
 playsinline
 webkit-playsinline
 crossorigin="anonymous"
-preload="auto" autoplay muted>
+preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
 
 </a-assets>
 
-<a-camera></a-camera>
+<a-camera position="0 1.6 0"></a-camera>
 
-<!-- TAMIL MARKER -->e
-<a-marker preset="hiro">
-
-<a-video
-src="#video"
-width="1.5"
-height="2.7"
-position="0 1 0">
-</a-video>
-
-<a-entity id="petalsTamil"></a-entity>
-
-</a-marker>
-
-<!-- ENGLISH MARKER -->
-<a-marker type="pattern" url="English_invite.patt" id="markerEnglish">
+<a-entity id="container" position="0 1.6 -3">
 
 <a-video
 src="#video"
 width="1.5"
 height="2.7"
-position="0 1 0">
+material="shader: flat">
 </a-video>
 
-<a-entity id="petalsEnglish"></a-entity>
+</a-entity>
 
-</a-marker>
+<a-entity id="petals"></a-entity>
 
 </a-scene>
 
 <script>
 
-window.onload = () => {
+/* ELEMENTS */
 
-  const video = document.querySelector("#video");
-  const overlay = document.querySelector("#overlay");
-  const arBtn = document.querySelector("#arBtn");
-  const webBtn = document.querySelector("#webBtn");
+const video = document.querySelector("#video");
+const overlay = document.querySelector("#overlay");
+const scene = document.querySelector("#scene");
 
-  const markerTamil = document.querySelector("#markerTamil");
-  const markerEnglish = document.querySelector("#markerEnglish");
+const arBtn = document.querySelector("#arBtn");
+const webBtn = document.querySelector("#webBtn");
 
-  let isPlaying = false;
+/* AR BUTTON */
 
-  /* AR BUTTON */
-  arBtn.onclick = () => {
-    overlay.style.display = "none";
-  };
+arBtn.onclick = async () => {
 
-  /* WEBSITE BUTTON */
-  webBtn.onclick = () => {
-    window.open("https://rweds.my.canva.site/", "_blank");
-  };
+  overlay.style.display = "none";
+  scene.style.display = "block";
 
-  /* WAIT UNTIL MARKERS ARE READY */
-  setTimeout(() => {
+  try {
+    video.muted = true;
+    await video.play();
 
-    if (!markerTamil || !markerEnglish) {
-      console.error("Markers not found");
-      return;
-    }
+    setTimeout(() => {
+      video.muted = false;
+    }, 500);
 
-    function playVideo() {
-      if (!isPlaying) {
-        video.muted = true;
-        video.play().catch(()=>{});
-        setTimeout(()=>{ video.muted = false; }, 500);
-        isPlaying = true;
-      }
-    }
-
-    function pauseVideo() {
-      video.pause();
-      isPlaying = false;
-    }
-
-    markerTamil.addEventListener("markerFound", playVideo);
-    markerEnglish.addEventListener("markerFound", playVideo);
-
-    markerTamil.addEventListener("markerLost", pauseVideo);
-    markerEnglish.addEventListener("markerLost", pauseVideo);
-
-  }, 2000); // wait 2 seconds for AR.js to initialize
+  } catch (e) {
+    alert("Tap again to start video");
+  }
 
 };
 
+/* WEBSITE BUTTON */
+
+webBtn.onclick = () => {
+
+  window.open("https://s-weds-r.my.canva.site/", "_blank");
+
+};
+
+/* PETALS EFFECT (FIXED POSITION) */
+
+const petals = document.querySelector("#petals");
+
+for(let i=0;i<35;i++){
+
+let p = document.createElement("a-image");
+
+p.setAttribute("src","#petal");
+p.setAttribute("scale","0.15 0.15 0.15");
+
+p.setAttribute("position",{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
+});
+
+p.setAttribute("animation",{
+property:"position",
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
+
+p.setAttribute("animation__spin",
+"property: rotation; to: 0 360 360; dur: 3000; loop: true");
+
+petals.appendChild(p);
+
+}
+
 </script>
+
 </body>
 </html>
