@@ -1,17 +1,21 @@
-AFRAME.registerComponent('place-on-tap', {
+AFRAME.registerComponent('tap-place', {
   init: function () {
+
     const scene = this.el.sceneEl;
+    const cursor = document.querySelector('#cursor');
     const content = document.querySelector('#content');
-    const ground = document.querySelector('#ground');
     const video = document.querySelector('#video');
 
     scene.addEventListener('click', () => {
 
-      const pos = ground.object3D.position;
+      // Get cursor position (REAL WORLD POSITION)
+      const pos = cursor.object3D.position;
 
+      // Place content
       content.setAttribute('position', pos);
       content.setAttribute('visible', true);
 
+      // Play video
       video.muted = true;
       video.play();
 
@@ -19,11 +23,13 @@ AFRAME.registerComponent('place-on-tap', {
         video.muted = false;
       }, 500);
 
-      this.addPetals();
+      // Add petals
+      this.createPetals();
     });
   },
 
-  addPetals: function () {
+  createPetals: function () {
+
     const petals = document.querySelector('#petals');
 
     for (let i = 0; i < 30; i++) {
@@ -60,9 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const scene = document.querySelector('a-scene');
 
   btn.onclick = () => {
+
     overlay.style.display = 'none';
 
-    scene.setAttribute('place-on-tap', '');
+    // Attach component AFTER scene loads
+    scene.setAttribute('tap-place', '');
+
   };
 
 });
