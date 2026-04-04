@@ -9,13 +9,69 @@
 
 <style>
 body { margin:0; overflow:hidden; }
+
+/* ROUND BUTTON STYLE */
+.btn-circle {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  font-size:16px;
+  border:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+/* AR BUTTON */
+#arBtn {
+  background:#d4af37;
+  color:white;
+  box-shadow:0 0 20px rgba(212,175,55,0.6);
+}
+
+/* WEBSITE BUTTON */
+#webBtn {
+  background:white;
+  color:black;
+  box-shadow:0 0 15px rgba(255,255,255,0.5);
+}
 </style>
 
 </head>
 
 <body>
 
-<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+<!-- OVERLAY -->
+
+<div id="overlay" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:9999;
+gap:20px;
+">
+
+<button id="arBtn" class="btn-circle">AR</button>
+<button id="webBtn" class="btn-circle">Website</button>
+
+</div>
+
+<!-- AR SCENE -->
+
+<a-scene 
+id="scene" 
+style="display:none;" 
+embedded 
+arjs="sourceType: webcam; debugUIEnabled: false;"
+>
 
 <a-assets>
 
@@ -25,15 +81,18 @@ loop
 muted
 playsinline
 webkit-playsinline
-crossorigin="anonymous">
+crossorigin="anonymous"
+preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
 
 </a-assets>
 
-<!-- MARKER A -->
-<a-marker type="pattern" url="English_invite.patt" id="markerA">
+<a-camera></a-camera>
+
+<!-- TAMIL MARKER -->
+<a-marker type="pattern" url="Tamil_invite.patt" id="markerTamil">
 
 <a-video
 src="#video"
@@ -42,12 +101,12 @@ height="2.7"
 position="0 1 0">
 </a-video>
 
-<a-entity id="petalsA"></a-entity>
+<a-entity id="petalsTamil"></a-entity>
 
 </a-marker>
 
-<!-- MARKER B -->
-<a-marker type="pattern" url="Tamil_invite.patt" id="markerB">
+<!-- ENGLISH MARKER -->
+<a-marker type="pattern" url="English_invite.patt" id="markerEnglish">
 
 <a-video
 src="#video"
@@ -56,24 +115,44 @@ height="2.7"
 position="0 1 0">
 </a-video>
 
-<a-entity id="petalsB"></a-entity>
+<a-entity id="petalsEnglish"></a-entity>
 
 </a-marker>
-
-<a-entity camera></a-entity>
 
 </a-scene>
 
 <script>
 
-/* VIDEO CONTROL */
+/* ELEMENTS */
 
 const video = document.querySelector("#video");
+const overlay = document.querySelector("#overlay");
+const scene = document.querySelector("#scene");
 
-const markerA = document.querySelector("#markerA");
-const markerB = document.querySelector("#markerB");
+const arBtn = document.querySelector("#arBtn");
+const webBtn = document.querySelector("#webBtn");
+
+const markerTamil = document.querySelector("#markerTamil");
+const markerEnglish = document.querySelector("#markerEnglish");
 
 let isPlaying = false;
+
+/* AR BUTTON */
+
+arBtn.onclick = () => {
+
+  overlay.style.display = "none";
+  scene.style.display = "block";
+
+};
+
+/* WEBSITE BUTTON */
+
+webBtn.onclick = () => {
+  window.open("https://rweds.my.canva.site/", "_blank");
+};
+
+/* VIDEO CONTROL */
 
 function playVideo() {
   if (!isPlaying) {
@@ -89,11 +168,11 @@ function pauseVideo() {
   isPlaying = false;
 }
 
-markerA.addEventListener("markerFound", playVideo);
-markerB.addEventListener("markerFound", playVideo);
+markerTamil.addEventListener("markerFound", playVideo);
+markerEnglish.addEventListener("markerFound", playVideo);
 
-markerA.addEventListener("markerLost", pauseVideo);
-markerB.addEventListener("markerLost", pauseVideo);
+markerTamil.addEventListener("markerLost", pauseVideo);
+markerEnglish.addEventListener("markerLost", pauseVideo);
 
 /* PETALS FUNCTION */
 
@@ -101,7 +180,7 @@ function createPetals(containerId) {
 
   const container = document.querySelector(containerId);
 
-  for(let i=0;i<30;i++){
+  for(let i=0;i<35;i++){
 
     let p = document.createElement("a-image");
 
@@ -109,29 +188,29 @@ function createPetals(containerId) {
     p.setAttribute("scale","0.15 0.15 0.15");
 
     p.setAttribute("position",{
-      x:(Math.random()*2)-1,
-      y:2+Math.random(),
-      z:(Math.random()*2)-1
+      x:(Math.random()*4)-2,
+      y:3+Math.random()*2,
+      z:-2-Math.random()*2
     });
 
     p.setAttribute("animation",{
       property:"position",
-      to:`${(Math.random()*2)-1} -1 ${(Math.random()*2)-1}`,
+      to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
       dur:4000+Math.random()*2000,
       loop:true
     });
 
     p.setAttribute("animation__spin",
-      "property: rotation; to: 0 360 360; dur: 3000; loop: true");
+    "property: rotation; to: 0 360 360; dur: 3000; loop: true");
 
     container.appendChild(p);
   }
 }
 
-/* CREATE PETALS FOR BOTH MARKERS */
+/* CREATE PETALS */
 
-createPetals("#petalsA");
-createPetals("#petalsB");
+createPetals("#petalsTamil");
+createPetals("#petalsEnglish");
 
 </script>
 
