@@ -6,6 +6,9 @@
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
+<!-- ✅ LINK YOUR APP.JS CORRECTLY -->
+<script defer src="app.js"></script>
+
 <style>
 body { margin:0; overflow:hidden; }
 
@@ -35,14 +38,13 @@ body { margin:0; overflow:hidden; }
   color:black;
   box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
-
 </style>
 
 </head>
 
 <body>
 
-<!-- OVERLAY WITH TWO BUTTONS -->
+<!-- OVERLAY -->
 
 <div id="overlay" style="
 position:fixed;
@@ -103,7 +105,7 @@ material="shader: flat">
 
 <script>
 
-/* ELEMENTS */
+/* KEEP YOUR EXISTING UI LOGIC */
 
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
@@ -136,41 +138,8 @@ arBtn.onclick = async () => {
 /* WEBSITE BUTTON */
 
 webBtn.onclick = () => {
-
   window.open("https://rweds.my.canva.site/", "_blank");
-
 };
-
-/* PETALS EFFECT (FIXED POSITION) */
-
-const petals = document.querySelector("#petals");
-
-for(let i=0;i<35;i++){
-
-let p = document.createElement("a-image");
-
-p.setAttribute("src","#petal");
-p.setAttribute("scale","0.15 0.15 0.15");
-
-p.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:3+Math.random()*2,
-z:-2-Math.random()*2
-});
-
-p.setAttribute("animation",{
-property:"position",
-to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-dur:4000+Math.random()*2000,
-loop:true
-});
-
-p.setAttribute("animation__spin",
-"property: rotation; to: 0 360 360; dur: 3000; loop: true");
-
-petals.appendChild(p);
-
-}
 
 </script>
 
