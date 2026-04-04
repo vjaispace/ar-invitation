@@ -1,30 +1,44 @@
 AFRAME.registerComponent('tap-place', {
   init: function () {
 
-    const scene = this.el.sceneEl;
     const cursor = document.querySelector('#cursor');
     const content = document.querySelector('#content');
     const video = document.querySelector('#video');
+    const scene = this.el.sceneEl;
 
+    let placed = false;
+
+    // Listen for tap using raycaster (IMPORTANT)
     scene.addEventListener('click', () => {
 
-      // Get cursor position (REAL WORLD POSITION)
+      // Ensure surface is detected
+      if (!cursor.object3D.visible) {
+        console.log("Surface not detected yet");
+        return;
+      }
+
+      // Get real world position
       const pos = cursor.object3D.position;
 
-      // Place content
-      content.setAttribute('position', pos);
-      content.setAttribute('visible', true);
+      // Place only once (optional)
+      if (!placed) {
 
-      // Play video
-      video.muted = true;
-      video.play();
+        content.setAttribute('position', pos);
+        content.setAttribute('visible', true);
 
-      setTimeout(() => {
-        video.muted = false;
-      }, 500);
+        // Play video safely
+        video.muted = true;
+        video.play().catch(() => {});
 
-      // Add petals
-      this.createPetals();
+        setTimeout(() => {
+          video.muted = false;
+        }, 500);
+
+        this.createPetals();
+
+        placed = true;
+      }
+
     });
   },
 
@@ -69,8 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     overlay.style.display = 'none';
 
-    // Attach component AFTER scene loads
-    scene.setAttribute('tap-place', '');
+    // Wait for XR to be ready before attaching component
+    scene.addEventListener('loaded', () => {
+      scene.setAttribute('tap-place', '');
+    });
 
   };
 
