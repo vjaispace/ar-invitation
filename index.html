@@ -5,11 +5,11 @@
 <title>AR Wedding Invitation</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
 
-/* ROUND BUTTON STYLE */
 .btn-circle {
   width:120px;
   height:120px;
@@ -22,27 +22,21 @@ body { margin:0; overflow:hidden; }
   text-align:center;
 }
 
-/* AR BUTTON */
 #arBtn {
   background:#d4af37;
   color:white;
-  box-shadow:0 0 20px rgba(212,175,55,0.6);
 }
 
-/* WEBSITE BUTTON */
 #webBtn {
   background:white;
   color:black;
-  box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
 </style>
-
 </head>
 
 <body>
 
 <!-- OVERLAY -->
-
 <div id="overlay" style="
 position:fixed;
 top:0;
@@ -63,9 +57,14 @@ gap:20px;
 
 </div>
 
-<!-- SCENE -->
-
-<a-scene id="scene" visible="false">
+<!-- AR SCENE -->
+<a-scene
+  id="scene"
+  xr-mode-ui="enabled: true"
+  renderer="logarithmicDepthBuffer: true;"
+  webxr="optionalFeatures: hit-test, local-floor"
+  visible="false"
+>
 
 <a-assets>
 
@@ -75,82 +74,91 @@ loop
 muted
 playsinline
 webkit-playsinline
-crossorigin="anonymous"
-preload="auto">
+crossorigin="anonymous">
 </video>
 
 <img id="petal" src="petal.png">
-<img id="bg" src="bg.jpeg">
 
 </a-assets>
 
+<!-- CAMERA -->
 <a-camera position="0 1.6 0"></a-camera>
 
-<!-- BACKGROUND -->
-<a-sky src="#bg" rotation="0 -90 0"></a-sky>
+<!-- RETICLE -->
+<a-entity id="reticle"
+  geometry="primitive: ring; radiusInner: 0.08; radiusOuter: 0.1"
+  material="color: white; shader: flat"
+  rotation="-90 0 0"
+  visible="false">
+</a-entity>
 
-<!-- LIGHTING -->
-<a-light type="ambient" intensity="1.2"></a-light>
-<a-light type="point" position="0 3 -2" intensity="2"></a-light>
-
-<!-- INVITATION VIDEO -->
-<a-entity id="container" position="0 1.6 -3">
+<!-- INVITATION -->
+<a-entity id="invitation" visible="false">
 
 <a-video
 src="#video"
 width="1.5"
 height="2.7"
-material="shader: flat">
+position="0 1.5 0">
 </a-video>
 
-</a-entity>
-
-<!-- PETALS -->
 <a-entity id="petals"></a-entity>
+
+</a-entity>
 
 </a-scene>
 
 <script>
 
-/* ELEMENTS */
-const video = document.querySelector("#video");
-const overlay = document.querySelector("#overlay");
 const scene = document.querySelector("#scene");
-
+const overlay = document.querySelector("#overlay");
 const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
 
-/* AR BUTTON */
+const video = document.querySelector("#video");
+const reticle = document.querySelector("#reticle");
+const invitation = document.querySelector("#invitation");
+
+/* OPEN AR */
+
 arBtn.onclick = async () => {
 
   overlay.style.display = "none";
-
-  // SHOW SCENE PROPERLY
   scene.setAttribute("visible", "true");
 
-  try {
-    video.muted = true;
-    await video.play();
+  const xr = navigator.xr;
 
-    setTimeout(() => {
-      video.muted = false;
-    }, 500);
-
-  } catch (e) {
-    alert("Tap again to start video");
+  if (!xr) {
+    alert("AR not supported on this device");
+    return;
   }
 
+  const session = await xr.requestSession("immersive-ar", {
+    requiredFeatures: ["hit-test", "local-floor"]
+  });
+
+  scene.renderer.xr.setSession(session);
+
 };
 
-/* WEBSITE BUTTON */
-webBtn.onclick = () => {
-  window.open("https://s-weds-r.my.canva.site/", "_blank");
-};
+/* PLACE OBJECT */
 
-/* PETALS EFFECT */
+scene.addEventListener("click", () => {
+
+  if (!reticle.object3D.visible) return;
+
+  invitation.object3D.position.copy(reticle.object3D.position);
+  invitation.setAttribute("visible", "true");
+
+  video.play();
+
+});
+
+/* PETALS */
+
 const petals = document.querySelector("#petals");
 
-for(let i=0;i<35;i++){
+for(let i=0;i<30;i++){
 
 let p = document.createElement("a-image");
 
@@ -158,20 +166,17 @@ p.setAttribute("src","#petal");
 p.setAttribute("scale","0.15 0.15 0.15");
 
 p.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:3+Math.random()*2,
-z:-2-Math.random()*2
+x:(Math.random()*2)-1,
+y:2+Math.random(),
+z:(Math.random()*2)-1
 });
 
 p.setAttribute("animation",{
 property:"position",
-to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+to:`${(Math.random()*2)-1} -1 ${(Math.random()*2)-1}`,
 dur:4000+Math.random()*2000,
 loop:true
 });
-
-p.setAttribute("animation__spin",
-"property: rotation; to: 0 360 360; dur: 3000; loop: true");
 
 petals.appendChild(p);
 
