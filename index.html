@@ -62,16 +62,22 @@
 
 <a-camera position="0 1.6 0"></a-camera>
 
-<a-entity id="ground" xrextras-hittest-anchor></a-entity>
+<!-- HIT TEST CURSOR -->
+<a-entity
+  id="cursor"
+  xrextras-hittest-anchor
+  xrextras-hittest-cursor
+  material="color: yellow"
+></a-entity>
 
+<!-- CONTENT -->
 <a-entity id="content" visible="false">
 
   <a-video
     id="invite"
     src="#video"
     width="1.5"
-    height="2.7"
-    position="0 0 0">
+    height="2.7">
   </a-video>
 
   <a-entity id="petals"></a-entity>
