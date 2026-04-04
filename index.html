@@ -66,12 +66,7 @@ gap:20px;
 
 <!-- AR SCENE -->
 
-<a-scene 
-id="scene" 
-style="display:none;" 
-embedded 
-arjs="sourceType: webcam; debugUIEnabled: false;"
->
+<a-scene id="scene" embedded arjs="sourceType: webcam; debugUIEnabled: true;">
 
 <a-assets>
 
@@ -82,7 +77,7 @@ muted
 playsinline
 webkit-playsinline
 crossorigin="anonymous"
-preload="auto">
+preload="auto" autoplay muted>
 </video>
 
 <img id="petal" src="petal.png">
@@ -91,7 +86,7 @@ preload="auto">
 
 <a-camera></a-camera>
 
-<!-- TAMIL MARKER -->
+<!-- TAMIL MARKER -->e
 <a-marker type="pattern" url="Tamil_invite.patt" id="markerTamil">
 
 <a-video
@@ -149,7 +144,7 @@ arBtn.onclick = () => {
 /* WEBSITE BUTTON */
 
 webBtn.onclick = () => {
-  window.open("https://rweds.my.canva.site/", "_blank");
+  window.open("https://s-weds-r.my.canva.site/", "_blank");
 };
 
 /* VIDEO CONTROL */
