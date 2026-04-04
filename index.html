@@ -2,155 +2,136 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Wedding AR Invite</title>
+<title>AR Wedding Invitation</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
-
-#overlay {
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:black;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  gap:20px;
-  z-index:9999;
-}
-
-button {
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  border:none;
-  font-size:18px;
-}
-
-#arBtn {
-  background:#d4af37;
-  color:white;
-}
-
-#webBtn {
-  background:white;
-  color:black;
-}
 </style>
+
 </head>
 
 <body>
 
-<div id="overlay">
-  <button id="arBtn">View Invitation</button>
-  <button id="webBtn">Website</button>
-</div>
-
-<a-scene id="scene" style="display:none;" vr-mode-ui="enabled:false">
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
 
 <a-assets>
+
 <video id="video"
 src="invitation.mp4"
 loop
 muted
 playsinline
-webkit-playsinline>
+webkit-playsinline
+crossorigin="anonymous">
 </video>
 
 <img id="petal" src="petal.png">
+
 </a-assets>
 
-<a-camera position="0 1.6 0"></a-camera>
-
-<a-entity position="0 1.6 -3">
+<!-- MARKER A -->
+<a-marker type="pattern" url="marker1.patt" id="markerA">
 
 <a-video
 src="#video"
 width="1.5"
-height="2.7">
+height="2.7"
+position="0 1 0">
 </a-video>
 
-</a-entity>
+<a-entity id="petalsA"></a-entity>
 
-<a-entity id="petals"></a-entity>
+</a-marker>
+
+<!-- MARKER B -->
+<a-marker type="pattern" url="marker2.patt" id="markerB">
+
+<a-video
+src="#video"
+width="1.5"
+height="2.7"
+position="0 1 0">
+</a-video>
+
+<a-entity id="petalsB"></a-entity>
+
+</a-marker>
+
+<a-entity camera></a-entity>
 
 </a-scene>
 
 <script>
 
-/* DEVICE DETECTION */
-const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+/* VIDEO CONTROL */
 
-/* ELEMENTS */
-const arBtn = document.getElementById("arBtn");
-const webBtn = document.getElementById("webBtn");
-const overlay = document.getElementById("overlay");
-const scene = document.getElementById("scene");
-const video = document.getElementById("video");
+const video = document.querySelector("#video");
 
-/* AR BUTTON */
+const markerA = document.querySelector("#markerA");
+const markerB = document.querySelector("#markerB");
 
-arBtn.onclick = async () => {
+let isPlaying = false;
 
-  if (isIOS) {
-    // ✅ iPhone → Native AR
-    window.location.href = "invitation.usdz";
-    return;
-  }
-
-  // ✅ Android → Web AR / 3D
-  overlay.style.display = "none";
-  scene.style.display = "block";
-
-  try {
+function playVideo() {
+  if (!isPlaying) {
     video.muted = true;
-    await video.play();
-
-    setTimeout(() => {
-      video.muted = false;
-    }, 500);
-
-  } catch (e) {
-    alert("Tap again");
+    video.play().catch(()=>{});
+    setTimeout(()=>{ video.muted = false; }, 500);
+    isPlaying = true;
   }
-
-};
-
-/* WEBSITE BUTTON */
-
-webBtn.onclick = () => {
-  window.open("https://rweds.my.canva.site/", "_blank");
-};
-
-/* PETALS */
-
-const petals = document.querySelector("#petals");
-
-for(let i=0;i<35;i++){
-
-let p = document.createElement("a-image");
-
-p.setAttribute("src","#petal");
-p.setAttribute("scale","0.15 0.15 0.15");
-
-p.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:3+Math.random()*2,
-z:-2-Math.random()*2
-});
-
-p.setAttribute("animation",{
-property:"position",
-to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-dur:4000+Math.random()*2000,
-loop:true
-});
-
-petals.appendChild(p);
 }
+
+function pauseVideo() {
+  video.pause();
+  isPlaying = false;
+}
+
+markerA.addEventListener("markerFound", playVideo);
+markerB.addEventListener("markerFound", playVideo);
+
+markerA.addEventListener("markerLost", pauseVideo);
+markerB.addEventListener("markerLost", pauseVideo);
+
+/* PETALS FUNCTION */
+
+function createPetals(containerId) {
+
+  const container = document.querySelector(containerId);
+
+  for(let i=0;i<30;i++){
+
+    let p = document.createElement("a-image");
+
+    p.setAttribute("src","#petal");
+    p.setAttribute("scale","0.15 0.15 0.15");
+
+    p.setAttribute("position",{
+      x:(Math.random()*2)-1,
+      y:2+Math.random(),
+      z:(Math.random()*2)-1
+    });
+
+    p.setAttribute("animation",{
+      property:"position",
+      to:`${(Math.random()*2)-1} -1 ${(Math.random()*2)-1}`,
+      dur:4000+Math.random()*2000,
+      loop:true
+    });
+
+    p.setAttribute("animation__spin",
+      "property: rotation; to: 0 360 360; dur: 3000; loop: true");
+
+    container.appendChild(p);
+  }
+}
+
+/* CREATE PETALS FOR BOTH MARKERS */
+
+createPetals("#petalsA");
+createPetals("#petalsB");
 
 </script>
 
