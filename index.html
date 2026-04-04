@@ -2,99 +2,75 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>AR Wedding Invitation</title>
+<title>Wedding AR Invite</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-<!-- ✅ LINK YOUR APP.JS CORRECTLY -->
-<script defer src="app.js"></script>
 
 <style>
 body { margin:0; overflow:hidden; }
 
-/* ROUND BUTTON STYLE */
-.btn-circle {
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  font-size:16px;
-  border:none;
+#overlay {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
   display:flex;
   justify-content:center;
   align-items:center;
-  text-align:center;
+  flex-direction:column;
+  gap:20px;
+  z-index:9999;
 }
 
-/* AR BUTTON */
+button {
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  border:none;
+  font-size:18px;
+}
+
 #arBtn {
   background:#d4af37;
   color:white;
-  box-shadow:0 0 20px rgba(212,175,55,0.6);
 }
 
-/* WEBSITE BUTTON */
 #webBtn {
   background:white;
   color:black;
-  box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
 </style>
-
 </head>
 
 <body>
 
-<!-- OVERLAY -->
-
-<div id="overlay" style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-background:black;
-z-index:9999;
-gap:20px;
-">
-
-<button id="arBtn" class="btn-circle">AR</button>
-<button id="webBtn" class="btn-circle">Website</button>
-
+<div id="overlay">
+  <button id="arBtn">View Invitation</button>
+  <button id="webBtn">Website</button>
 </div>
 
-<!-- SCENE -->
-
-<a-scene id="scene" style="display:none;" background="color: beige">
+<a-scene id="scene" style="display:none;" vr-mode-ui="enabled:false">
 
 <a-assets>
-
 <video id="video"
 src="invitation.mp4"
 loop
 muted
 playsinline
-webkit-playsinline
-crossorigin="anonymous"
-preload="auto">
+webkit-playsinline>
 </video>
 
 <img id="petal" src="petal.png">
-
 </a-assets>
 
 <a-camera position="0 1.6 0"></a-camera>
 
-<a-entity id="container" position="0 1.6 -3">
+<a-entity position="0 1.6 -3">
 
 <a-video
 src="#video"
 width="1.5"
-height="2.7"
-material="shader: flat">
+height="2.7">
 </a-video>
 
 </a-entity>
@@ -105,19 +81,27 @@ material="shader: flat">
 
 <script>
 
-/* KEEP YOUR EXISTING UI LOGIC */
+/* DEVICE DETECTION */
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-const video = document.querySelector("#video");
-const overlay = document.querySelector("#overlay");
-const scene = document.querySelector("#scene");
-
-const arBtn = document.querySelector("#arBtn");
-const webBtn = document.querySelector("#webBtn");
+/* ELEMENTS */
+const arBtn = document.getElementById("arBtn");
+const webBtn = document.getElementById("webBtn");
+const overlay = document.getElementById("overlay");
+const scene = document.getElementById("scene");
+const video = document.getElementById("video");
 
 /* AR BUTTON */
 
 arBtn.onclick = async () => {
 
+  if (isIOS) {
+    // ✅ iPhone → Native AR
+    window.location.href = "invitation.usdz";
+    return;
+  }
+
+  // ✅ Android → Web AR / 3D
   overlay.style.display = "none";
   scene.style.display = "block";
 
@@ -130,7 +114,7 @@ arBtn.onclick = async () => {
     }, 500);
 
   } catch (e) {
-    alert("Tap again to start video");
+    alert("Tap again");
   }
 
 };
@@ -140,6 +124,33 @@ arBtn.onclick = async () => {
 webBtn.onclick = () => {
   window.open("https://rweds.my.canva.site/", "_blank");
 };
+
+/* PETALS */
+
+const petals = document.querySelector("#petals");
+
+for(let i=0;i<35;i++){
+
+let p = document.createElement("a-image");
+
+p.setAttribute("src","#petal");
+p.setAttribute("scale","0.15 0.15 0.15");
+
+p.setAttribute("position",{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
+});
+
+p.setAttribute("animation",{
+property:"position",
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
+
+petals.appendChild(p);
+}
 
 </script>
 
