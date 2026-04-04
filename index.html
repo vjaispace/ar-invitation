@@ -118,7 +118,7 @@ position="0 1 0">
 
 <script>
 
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
 
   const video = document.querySelector("#video");
   const overlay = document.querySelector("#overlay");
@@ -140,37 +140,38 @@ document.addEventListener("DOMContentLoaded", () => {
     window.open("https://rweds.my.canva.site/", "_blank");
   };
 
-  /* SAFETY CHECK */
-  if (!markerTamil || !markerEnglish) {
-    console.log("Markers not found");
-    return;
-  }
+  /* WAIT UNTIL MARKERS ARE READY */
+  setTimeout(() => {
 
-  /* VIDEO CONTROL */
-
-  function playVideo() {
-    if (!isPlaying) {
-      video.muted = true;
-      video.play().catch(()=>{});
-      setTimeout(()=>{ video.muted = false; }, 500);
-      isPlaying = true;
+    if (!markerTamil || !markerEnglish) {
+      console.error("Markers not found");
+      return;
     }
-  }
 
-  function pauseVideo() {
-    video.pause();
-    isPlaying = false;
-  }
+    function playVideo() {
+      if (!isPlaying) {
+        video.muted = true;
+        video.play().catch(()=>{});
+        setTimeout(()=>{ video.muted = false; }, 500);
+        isPlaying = true;
+      }
+    }
 
-  markerTamil.addEventListener("markerFound", playVideo);
-  markerEnglish.addEventListener("markerFound", playVideo);
+    function pauseVideo() {
+      video.pause();
+      isPlaying = false;
+    }
 
-  markerTamil.addEventListener("markerLost", pauseVideo);
-  markerEnglish.addEventListener("markerLost", pauseVideo);
+    markerTamil.addEventListener("markerFound", playVideo);
+    markerEnglish.addEventListener("markerFound", playVideo);
 
-});
+    markerTamil.addEventListener("markerLost", pauseVideo);
+    markerEnglish.addEventListener("markerLost", pauseVideo);
+
+  }, 2000); // wait 2 seconds for AR.js to initialize
+
+};
 
 </script>
-
 </body>
 </html>
