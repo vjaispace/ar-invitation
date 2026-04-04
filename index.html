@@ -35,14 +35,13 @@ body { margin:0; overflow:hidden; }
   color:black;
   box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
-
 </style>
 
 </head>
 
 <body>
 
-<!-- OVERLAY WITH TWO BUTTONS -->
+<!-- OVERLAY -->
 
 <div id="overlay" style="
 position:fixed;
@@ -66,7 +65,7 @@ gap:20px;
 
 <!-- SCENE -->
 
-<a-scene id="scene" style="display:none;">
+<a-scene id="scene" visible="false">
 
 <a-assets>
 
@@ -83,7 +82,6 @@ preload="auto">
 <img id="petal" src="petal.png">
 <img id="bg" src="bg.jpeg">
 
-
 </a-assets>
 
 <a-camera position="0 1.6 0"></a-camera>
@@ -91,6 +89,11 @@ preload="auto">
 <!-- BACKGROUND -->
 <a-sky src="#bg" rotation="0 -90 0"></a-sky>
 
+<!-- LIGHTING -->
+<a-light type="ambient" intensity="1.2"></a-light>
+<a-light type="point" position="0 3 -2" intensity="2"></a-light>
+
+<!-- INVITATION VIDEO -->
 <a-entity id="container" position="0 1.6 -3">
 
 <a-video
@@ -102,6 +105,7 @@ material="shader: flat">
 
 </a-entity>
 
+<!-- PETALS -->
 <a-entity id="petals"></a-entity>
 
 </a-scene>
@@ -109,7 +113,6 @@ material="shader: flat">
 <script>
 
 /* ELEMENTS */
-
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
 const scene = document.querySelector("#scene");
@@ -118,11 +121,12 @@ const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
 
 /* AR BUTTON */
-
 arBtn.onclick = async () => {
 
   overlay.style.display = "none";
-  scene.style.display = "block";
+
+  // SHOW SCENE PROPERLY
+  scene.setAttribute("visible", "true");
 
   try {
     video.muted = true;
@@ -139,15 +143,11 @@ arBtn.onclick = async () => {
 };
 
 /* WEBSITE BUTTON */
-
 webBtn.onclick = () => {
-
   window.open("https://s-weds-r.my.canva.site/", "_blank");
-
 };
 
-/* PETALS EFFECT (FIXED POSITION) */
-
+/* PETALS EFFECT */
 const petals = document.querySelector("#petals");
 
 for(let i=0;i<35;i++){
