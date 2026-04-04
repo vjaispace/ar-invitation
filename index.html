@@ -65,10 +65,11 @@
 <!-- HIT TEST CURSOR -->
 <a-entity
   id="cursor"
-  xrextras-hittest-anchor
   xrextras-hittest-cursor
+  raycaster="objects: .clickable"
   material="color: yellow"
-></a-entity>
+  geometry="primitive: ring; radiusInner: 0.05; radiusOuter: 0.06">
+</a-entity>
 
 <!-- CONTENT -->
 <a-entity id="content" visible="false">
