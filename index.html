@@ -1,186 +1,176 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="8thwall:renderer" content="aframe:1.4.2">
-  <meta name="8thwall:package" content="@8thwall.xrextras">
+<meta charset="utf-8">
+<title>AR Wedding Invitation</title>
 
-  <script src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
-  <script src="//cdn.8thwall.com/web/aframe/aframe.min.js"></script>
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-  <style>
-    body { margin:0; overflow:hidden; }
+<style>
+body { margin:0; overflow:hidden; }
 
-    #overlay {
-      position:fixed;
-      width:100%;
-      height:100%;
-      background:black;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      z-index:10;
-    }
+/* ROUND BUTTON STYLE */
+.btn-circle {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  font-size:16px;
+  border:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
 
-    button {
-      width:140px;
-      height:140px;
-      border-radius:50%;
-      background:#d4af37;
-      color:white;
-      border:none;
-      font-size:18px;
-    }
-  </style>
+/* AR BUTTON */
+#arBtn {
+  background:#d4af37;
+  color:white;
+  box-shadow:0 0 20px rgba(212,175,55,0.6);
+}
+
+/* WEBSITE BUTTON */
+#webBtn {
+  background:white;
+  color:black;
+  box-shadow:0 0 15px rgba(255,255,255,0.5);
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div id="overlay">
-  <button id="startBtn">Start AR</button>
+<!-- OVERLAY WITH TWO BUTTONS -->
+
+<div id="overlay" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:9999;
+gap:20px;
+">
+
+<button id="arBtn" class="btn-circle">AR</button>
+<button id="webBtn" class="btn-circle">Website</button>
+
 </div>
 
-<a-scene
-  xrweb
-  xrextras-loading
-  xrextras-runtime-error
-  renderer="colorManagement:true"
->
+<!-- SCENE -->
+
+<a-scene id="scene" style="display:none;" background="color: beige">
 
 <a-assets>
-  <video id="video"
-    src="invitation.mp4"
-    loop
-    muted
-    playsinline
-    crossorigin="anonymous">
-  </video>
 
-  <img id="petal" src="petal.png">
+<video id="video"
+src="invitation.mp4"
+loop
+muted
+playsinline
+webkit-playsinline
+crossorigin="anonymous"
+preload="auto">
+</video>
+
+<img id="petal" src="petal.png">
+
 </a-assets>
 
 <a-camera position="0 1.6 0"></a-camera>
 
-<!-- HIT TEST CURSOR -->
-<a-entity
-  id="cursor"
-  xrextras-hittest-cursor
-  raycaster="objects: .clickable"
-  material="color: yellow"
-  geometry="primitive: ring; radiusInner: 0.05; radiusOuter: 0.06">
-</a-entity>
+<a-entity id="container" position="0 1.6 -3">
 
-<!-- CONTENT -->
-<a-entity id="content" visible="false">
-
-  <a-video
-    id="invite"
-    class="clickable"
-    src="#video"
-    width="1.5"
-    height="2.7"
-    animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 800">
-  </a-video>
-
-  <a-entity id="petals"></a-entity>
+<a-video
+src="#video"
+width="1.5"
+height="2.7"
+material="shader: flat">
+</a-video>
 
 </a-entity>
+
+<a-entity id="petals"></a-entity>
 
 </a-scene>
 
 <script>
 
-/* COMPONENT */
+/* ELEMENTS */
 
-AFRAME.registerComponent('tap-place', {
-  init: function () {
+const video = document.querySelector("#video");
+const overlay = document.querySelector("#overlay");
+const scene = document.querySelector("#scene");
 
-    const cursor = document.querySelector('#cursor');
-    const content = document.querySelector('#content');
-    const video = document.querySelector('#video');
-    const scene = this.el.sceneEl;
+const arBtn = document.querySelector("#arBtn");
+const webBtn = document.querySelector("#webBtn");
 
-    let placed = false;
+/* AR BUTTON */
 
-    scene.addEventListener('click', () => {
+arBtn.onclick = async () => {
 
-      if (!cursor.object3D.visible) {
-        console.log("Move phone to detect surface");
-        return;
-      }
+  overlay.style.display = "none";
+  scene.style.display = "block";
 
-      const pos = cursor.object3D.position;
+  try {
+    video.muted = true;
+    await video.play();
 
-      if (!placed) {
+    setTimeout(() => {
+      video.muted = false;
+    }, 500);
 
-        content.setAttribute('position', pos);
-        content.setAttribute('visible', true);
-
-        video.muted = true;
-        video.play().catch(() => {});
-
-        setTimeout(() => {
-          video.muted = false;
-        }, 500);
-
-        createPetals();
-
-        placed = true;
-      }
-
-    });
+  } catch (e) {
+    alert("Tap again to start video");
   }
+
+};
+
+/* WEBSITE BUTTON */
+
+webBtn.onclick = () => {
+
+  window.open("https://rweds.my.canva.site/", "_blank");
+
+};
+
+/* PETALS EFFECT (FIXED POSITION) */
+
+const petals = document.querySelector("#petals");
+
+for(let i=0;i<35;i++){
+
+let p = document.createElement("a-image");
+
+p.setAttribute("src","#petal");
+p.setAttribute("scale","0.15 0.15 0.15");
+
+p.setAttribute("position",{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
 });
 
-/* PETALS FUNCTION */
+p.setAttribute("animation",{
+property:"position",
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
 
-function createPetals() {
+p.setAttribute("animation__spin",
+"property: rotation; to: 0 360 360; dur: 3000; loop: true");
 
-  const petals = document.querySelector('#petals');
+petals.appendChild(p);
 
-  for (let i = 0; i < 30; i++) {
-
-    let p = document.createElement('a-image');
-
-    p.setAttribute('src', '#petal');
-    p.setAttribute('scale', '0.15 0.15 0.15');
-
-    p.setAttribute('position', {
-      x: (Math.random()*2)-1,
-      y: 2 + Math.random(),
-      z: (Math.random()*2)-1
-    });
-
-    p.setAttribute('animation', {
-      property: 'position',
-      to: `${(Math.random()*2)-1} -1 ${(Math.random()*2)-1}`,
-      dur: 4000 + Math.random()*2000,
-      loop: true
-    });
-
-    petals.appendChild(p);
-  }
 }
-
-/* START BUTTON */
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  const btn = document.getElementById('startBtn');
-  const overlay = document.getElementById('overlay');
-  const scene = document.querySelector('a-scene');
-
-  btn.onclick = () => {
-
-    overlay.style.display = 'none';
-
-    // Wait until scene is ready
-    scene.addEventListener('loaded', () => {
-      scene.setAttribute('tap-place', '');
-    });
-
-  };
-
-});
 
 </script>
 
