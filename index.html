@@ -24,7 +24,6 @@ body { margin:0; overflow:hidden; }
 
 <body>
 
-<!-- OVERLAY -->
 <div id="overlay" style="
 position:fixed;
 top:0; left:0;
@@ -42,7 +41,8 @@ gap:20px;">
 
 </div>
 
-<a-scene id="scene" visible="false" xr-mode-ui="enabled: false"
+<a-scene id="scene" visible="false"
+xr-mode-ui="enabled: false"
 cursor="rayOrigin: mouse"
 raycaster="objects: .clickable">
 
@@ -50,12 +50,8 @@ raycaster="objects: .clickable">
 
 <video id="video"
 src="invitation.mp4"
-loop
-muted
-playsinline
-webkit-playsinline
-crossorigin="anonymous"
-preload="auto">
+loop muted playsinline webkit-playsinline
+crossorigin="anonymous" preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
@@ -63,35 +59,28 @@ preload="auto">
 
 </a-assets>
 
-<!-- CAMERA -->
 <a-camera position="0 1.6 0">
 
-  <!-- SMALL CLICK BUTTON -->
-  <a-entity position="0 -0.55 -1">
+<a-entity position="0 -0.55 -1">
 
-    <a-circle
-      id="btn"
-      class="clickable"
-      radius="0.08"
-      color="#fff"
-      opacity="0.6">
-    </a-circle>
+<a-circle id="btn" class="clickable"
+radius="0.08" color="#fff" opacity="0.6"></a-circle>
 
-    <!-- PLAY -->
-    <a-triangle id="playIcon"
-      visible="false"
-      color="#000"
-      vertex-a="0.03 0 0"
-      vertex-b="-0.02 0.03 0"
-      vertex-c="-0.02 -0.03 0"
-      position="0 0 0.01">
-    </a-triangle>
+<a-triangle id="playIcon"
+visible="false"
+color="#000"
+vertex-a="0.03 0 0"
+vertex-b="-0.02 0.03 0"
+vertex-c="-0.02 -0.03 0"
+position="0 0 0.01"></a-triangle>
 
-    <!-- PAUSE -->
-    <a-box id="bar1" width="0.01" height="0.05" depth="0.01" color="#000" position="-0.015 0 0.01"></a-box>
-    <a-box id="bar2" width="0.01" height="0.05" depth="0.01" color="#000" position="0.015 0 0.01"></a-box>
+<a-box id="bar1" width="0.01" height="0.05" depth="0.01"
+color="#000" position="-0.015 0 0.01"></a-box>
 
-  </a-entity>
+<a-box id="bar2" width="0.01" height="0.05" depth="0.01"
+color="#000" position="0.015 0 0.01"></a-box>
+
+</a-entity>
 
 </a-camera>
 
@@ -101,7 +90,7 @@ preload="auto">
 <a-light type="point" position="0 3 -2" intensity="2"></a-light>
 
 <a-entity position="0 1.6 -3">
-  <a-video src="#video" width="1.5" height="2.7" material="shader: flat"></a-video>
+<a-video src="#video" width="1.5" height="2.7" material="shader: flat"></a-video>
 </a-entity>
 
 <a-entity id="petals"></a-entity>
@@ -125,68 +114,83 @@ const bar2 = document.querySelector("#bar2");
 /* START */
 arBtn.onclick = async () => {
 
-  overlay.style.display = "none";
-  scene.setAttribute("visible", "true");
+overlay.style.display = "none";
+scene.setAttribute("visible", "true");
 
-  try {
-    video.muted = true;
-    await video.play();
-    setTimeout(()=> video.muted=false,500);
-  } catch {
-    alert("Tap again");
-  }
+try {
+video.muted = true;
+await video.play();
+setTimeout(()=> video.muted=false,500);
+} catch {
+alert("Tap again");
+}
+
 };
 
 /* WEBSITE */
 webBtn.onclick = () => {
-  window.open("https://s-weds-r.my.canva.site/", "_blank");
+window.open("https://s-weds-r.my.canva.site/", "_blank");
 };
 
 /* TOGGLE */
 function toggle(){
 
-  if(video.paused){
-    video.play();
-    playIcon.setAttribute("visible", false);
-    bar1.setAttribute("visible", true);
-    bar2.setAttribute("visible", true);
-  } else {
-    video.pause();
-    playIcon.setAttribute("visible", true);
-    bar1.setAttribute("visible", false);
-    bar2.setAttribute("visible", false);
-  }
+if(video.paused){
+video.play();
+playIcon.setAttribute("visible", false);
+bar1.setAttribute("visible", true);
+bar2.setAttribute("visible", true);
+}else{
+video.pause();
+playIcon.setAttribute("visible", true);
+bar1.setAttribute("visible", false);
+bar2.setAttribute("visible", false);
+}
 
 }
 
+/* MOBILE CLICK (UNCHANGED) */
 btn.addEventListener("click", toggle);
 playIcon.addEventListener("click", toggle);
 bar1.addEventListener("click", toggle);
 bar2.addEventListener("click", toggle);
 
+/* 🔥 FINAL AR FIX */
+scene.addEventListener("loaded", () => {
+
+const canvas = scene.renderer.domElement;
+
+/* touch for AR */
+canvas.addEventListener("touchstart", toggle);
+
+/* fallback */
+canvas.addEventListener("mousedown", toggle);
+
+});
+
 /* PETALS */
 const petals = document.querySelector("#petals");
 
 for(let i=0;i<35;i++){
-  let p=document.createElement("a-image");
+let p=document.createElement("a-image");
 
-  p.setAttribute("src","#petal");
-  p.setAttribute("scale","0.15 0.15 0.15");
+p.setAttribute("src","#petal");
+p.setAttribute("scale","0.15 0.15 0.15");
 
-  p.setAttribute("position",{
-    x:(Math.random()*4)-2,
-    y:3+Math.random()*2,
-    z:-2-Math.random()*2
-  });
+p.setAttribute("position",{
+x:(Math.random()*4)-2,
+y:3+Math.random()*2,
+z:-2-Math.random()*2
+});
 
-  p.setAttribute("animation",{
-    property:"position",
-    to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-    dur:4000+Math.random()*2000,
-    loop:true
-  });
+p.setAttribute("animation",{
+property:"position",
+to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
+dur:4000+Math.random()*2000,
+loop:true
+});
 
-  petals.appendChild(p);
+petals.appendChild(p);
 }
 
 </script>
