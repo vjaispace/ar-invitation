@@ -42,33 +42,40 @@ gap:20px;">
 
 </div>
 
-<a-scene id="scene" visible="false" xr-mode-ui="enabled: false">
+<a-scene id="scene" visible="false" xr-mode-ui="enabled: false"
+cursor="rayOrigin: mouse"
+raycaster="objects: .clickable">
 
 <a-assets>
+
 <video id="video"
 src="invitation.mp4"
-loop muted playsinline webkit-playsinline
-crossorigin="anonymous" preload="auto">
+loop
+muted
+playsinline
+webkit-playsinline
+crossorigin="anonymous"
+preload="auto">
 </video>
 
 <img id="petal" src="petal.png">
 <img id="bg" src="bg.jpeg">
+
 </a-assets>
 
 <!-- CAMERA -->
 <a-camera position="0 1.6 0">
 
-  <!-- TAP AREA (KEY FIX) -->
-  <a-plane id="tapArea"
-    width="2" height="3"
-    position="0 0 -1"
-    material="opacity:0; transparent:true">
-  </a-plane>
-
-  <!-- UI BUTTON (SMALL SIZE) -->
+  <!-- SMALL CLICK BUTTON -->
   <a-entity position="0 -0.55 -1">
 
-    <a-circle radius="0.08" color="#fff" opacity="0.6"></a-circle>
+    <a-circle
+      id="btn"
+      class="clickable"
+      radius="0.08"
+      color="#fff"
+      opacity="0.6">
+    </a-circle>
 
     <!-- PLAY -->
     <a-triangle id="playIcon"
@@ -110,11 +117,10 @@ const scene = document.querySelector("#scene");
 const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
 
+const btn = document.querySelector("#btn");
 const playIcon = document.querySelector("#playIcon");
 const bar1 = document.querySelector("#bar1");
 const bar2 = document.querySelector("#bar2");
-
-const tapArea = document.querySelector("#tapArea");
 
 /* START */
 arBtn.onclick = async () => {
@@ -136,9 +142,7 @@ webBtn.onclick = () => {
   window.open("https://s-weds-r.my.canva.site/", "_blank");
 };
 
-/* TOGGLE (WORKS IN AR) */
-tapArea.addEventListener("click", toggle);
-
+/* TOGGLE */
 function toggle(){
 
   if(video.paused){
@@ -154,6 +158,11 @@ function toggle(){
   }
 
 }
+
+btn.addEventListener("click", toggle);
+playIcon.addEventListener("click", toggle);
+bar1.addEventListener("click", toggle);
+bar2.addEventListener("click", toggle);
 
 /* PETALS */
 const petals = document.querySelector("#petals");
