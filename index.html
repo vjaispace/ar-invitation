@@ -112,13 +112,15 @@ const playIcon = document.querySelector("#playIcon");
 const bar1 = document.querySelector("#bar1");
 const bar2 = document.querySelector("#bar2");
 
-let isARMode = false;
+let isAR = false;
 
 /* START */
 arBtn.onclick = async () => {
 
 overlay.style.display = "none";
 scene.setAttribute("visible", "true");
+
+isAR = true;   // 🔥 FORCE AR MODE
 
 try {
 video.muted = true;
@@ -158,49 +160,19 @@ playIcon.addEventListener("click", toggle);
 bar1.addEventListener("click", toggle);
 bar2.addEventListener("click", toggle);
 
-/* 🔥 AR MODE DETECTION */
-scene.addEventListener("enter-vr", () => {
+/* 🔥 AR TAP ANYWHERE (WORKING) */
+document.addEventListener("touchstart", (e) => {
 
-isARMode = true;
+if(isAR){
 
-const canvas = scene.renderer.domElement;
+// avoid double trigger when pressing button
+if(!e.target.closest(".a-canvas")) return;
 
-/* TAP ANYWHERE ONLY IN AR */
-canvas.addEventListener("touchstart", (e) => {
-
-/* prevent double trigger from button */
-if(e.target.closest(".a-canvas")) {
 toggle();
+
 }
 
 });
-
-});
-
-/* PETALS */
-const petals = document.querySelector("#petals");
-
-for(let i=0;i<35;i++){
-let p=document.createElement("a-image");
-
-p.setAttribute("src","#petal");
-p.setAttribute("scale","0.15 0.15 0.15");
-
-p.setAttribute("position",{
-x:(Math.random()*4)-2,
-y:3+Math.random()*2,
-z:-2-Math.random()*2
-});
-
-p.setAttribute("animation",{
-property:"position",
-to:`${(Math.random()*3)-1.5} -1 ${-2-Math.random()*2}`,
-dur:4000+Math.random()*2000,
-loop:true
-});
-
-petals.appendChild(p);
-}
 
 </script>
 
