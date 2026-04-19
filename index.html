@@ -64,10 +64,10 @@ gap:20px;
 
 <!-- SCENE -->
 <a-scene 
-  id="scene" 
+  id="scene"
   visible="false"
   xr-mode-ui="enabled: false"
-  cursor="rayOrigin: mouse"
+  cursor="rayOrigin: mouse; fuse: false"
   raycaster="objects: .clickable"
 >
 
@@ -110,9 +110,9 @@ material="shader: flat">
 </a-entity>
 
 <!-- 🎯 AR PLAY/PAUSE BUTTON -->
-<a-entity id="uiBtn" position="0 0.3 -2.4">
+<a-entity id="uiBtn" position="0 1.1 -2.3" look-at="[camera]">
 
-  <!-- BUTTON BACKGROUND -->
+  <!-- BACKGROUND -->
   <a-circle
     id="pauseBtn"
     class="clickable"
@@ -133,7 +133,7 @@ material="shader: flat">
     position="0 0 0.01">
   </a-triangle>
 
-  <!-- PAUSE ICON (2 bars) -->
+  <!-- PAUSE ICON -->
   <a-box
     id="bar1"
     class="clickable"
@@ -198,16 +198,40 @@ webBtn.onclick = () => {
 
 /* 🎯 PLAY / PAUSE CONTROL */
 const pauseBtn = document.querySelector("#pauseBtn");
-const pauseIcon = document.querySelector("#pauseIcon");
+const playIcon = document.querySelector("#playIcon");
+const bar1 = document.querySelector("#bar1");
+const bar2 = document.querySelector("#bar2");
 
-function toggleVideo(){
+/* USE CLICK + TOUCH FOR MOBILE */
+["click","touchstart"].forEach(evt => {
+
+  pauseBtn.addEventListener(evt, toggleVideo);
+  playIcon.addEventListener(evt, toggleVideo);
+  bar1.addEventListener(evt, toggleVideo);
+  bar2.addEventListener(evt, toggleVideo);
+
+});
+
+function toggleVideo(e){
+
+  e.preventDefault();
 
   if(video.paused){
+
     video.play();
-    pauseIcon.setAttribute("value", "❚❚");
+
+    playIcon.setAttribute("visible", false);
+    bar1.setAttribute("visible", true);
+    bar2.setAttribute("visible", true);
+
   } else {
+
     video.pause();
-    pauseIcon.setAttribute("value", "▶");
+
+    playIcon.setAttribute("visible", true);
+    bar1.setAttribute("visible", false);
+    bar2.setAttribute("visible", false);
+
   }
 
 }
