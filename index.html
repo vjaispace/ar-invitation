@@ -35,6 +35,21 @@ body { margin:0; overflow:hidden; }
   color:black;
   box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
+
+/* VIDEO CONTROL BUTTON */
+#controlBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  z-index:9999;
+  padding:10px 16px;
+  background:#d4af37;
+  color:white;
+  border:none;
+  border-radius:8px;
+  display:none;
+}
+
 </style>
 
 </head>
@@ -61,6 +76,9 @@ gap:20px;
 <button id="webBtn" class="btn-circle">Website</button>
 
 </div>
+
+<!-- VIDEO CONTROL -->
+<button id="controlBtn">Pause</button>
 
 <!-- SCENE -->
 <a-scene 
@@ -121,6 +139,7 @@ const scene = document.querySelector("#scene");
 
 const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
+const controlBtn = document.querySelector("#controlBtn");
 
 /* AR BUTTON */
 arBtn.onclick = async () => {
@@ -129,12 +148,15 @@ arBtn.onclick = async () => {
   scene.setAttribute("visible", "true");
 
   try {
+
     video.muted = true;
     await video.play();
 
     setTimeout(() => {
       video.muted = false;
     }, 500);
+
+    controlBtn.style.display = "block";
 
   } catch (e) {
     alert("Tap again to start video");
@@ -145,6 +167,19 @@ arBtn.onclick = async () => {
 /* WEBSITE BUTTON */
 webBtn.onclick = () => {
   window.open("https://s-weds-r.my.canva.site/", "_blank");
+};
+
+/* PLAY / PAUSE CONTROL */
+controlBtn.onclick = () => {
+
+  if(video.paused){
+    video.play();
+    controlBtn.innerText = "Pause";
+  } else {
+    video.pause();
+    controlBtn.innerText = "Play";
+  }
+
 };
 
 /* PETALS EFFECT */
