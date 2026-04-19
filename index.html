@@ -9,7 +9,6 @@
 <style>
 body { margin:0; overflow:hidden; }
 
-/* ROUND BUTTON STYLE */
 .btn-circle {
   width:120px;
   height:120px;
@@ -19,21 +18,16 @@ body { margin:0; overflow:hidden; }
   display:flex;
   justify-content:center;
   align-items:center;
-  text-align:center;
 }
 
-/* AR BUTTON */
 #arBtn {
   background:#d4af37;
   color:white;
-  box-shadow:0 0 20px rgba(212,175,55,0.6);
 }
 
-/* WEBSITE BUTTON */
 #webBtn {
   background:white;
   color:black;
-  box-shadow:0 0 15px rgba(255,255,255,0.5);
 }
 </style>
 
@@ -67,7 +61,6 @@ gap:20px;
   id="scene" 
   visible="false"
   xr-mode-ui="enabled: false"
-  cursor="rayOrigin: mouse; fuse: false"
   raycaster="objects: .clickable"
 >
 
@@ -88,16 +81,17 @@ preload="auto">
 
 </a-assets>
 
-<!-- CAMERA + UI -->
-<a-camera position="0 1.6 0">
+<!-- CAMERA + CURSOR -->
+<a-camera position="0 1.6 0" cursor="rayOrigin: entity">
 
-  <!-- UI BUTTON ATTACHED TO CAMERA -->
-  <a-entity position="0 -0.5 -1">
+  <!-- UI BUTTON -->
+  <a-entity position="0 -0.6 -1">
 
+    <!-- BACK -->
     <a-circle
       id="pauseBtn"
       class="clickable"
-      radius="0.2"
+      radius="0.15"
       color="#ffffff"
       opacity="0.6">
     </a-circle>
@@ -108,9 +102,10 @@ preload="auto">
       class="clickable"
       visible="false"
       color="#000"
-      vertex-a="0 0.07 0"
-      vertex-b="-0.05 -0.07 0"
-      vertex-c="0.05 -0.07 0"
+      vertex-a="0.06 0 0"
+      vertex-b="-0.04 0.05 0"
+      vertex-c="-0.04 -0.05 0"
+      rotation="0 0 0"
       position="0 0 0.01">
     </a-triangle>
 
@@ -118,21 +113,21 @@ preload="auto">
     <a-box
       id="bar1"
       class="clickable"
-      width="0.03"
-      height="0.1"
+      width="0.02"
+      height="0.08"
       depth="0.01"
       color="#000"
-      position="-0.04 0 0.01">
+      position="-0.03 0 0.01">
     </a-box>
 
     <a-box
       id="bar2"
       class="clickable"
-      width="0.03"
-      height="0.1"
+      width="0.02"
+      height="0.08"
       depth="0.01"
       color="#000"
-      position="0.04 0 0.01">
+      position="0.03 0 0.01">
     </a-box>
 
   </a-entity>
@@ -140,22 +135,14 @@ preload="auto">
 </a-camera>
 
 <!-- BACKGROUND -->
-<a-sky src="#bg" rotation="0 -90 0"></a-sky>
+<a-sky src="#bg"></a-sky>
 
-<!-- LIGHTING -->
 <a-light type="ambient" intensity="1.2"></a-light>
 <a-light type="point" position="0 3 -2" intensity="2"></a-light>
 
 <!-- VIDEO -->
-<a-entity id="container" position="0 1.6 -3">
-
-<a-video
-src="#video"
-width="1.5"
-height="2.7"
-material="shader: flat">
-</a-video>
-
+<a-entity position="0 1.6 -3">
+  <a-video src="#video" width="1.5" height="2.7" material="shader: flat"></a-video>
 </a-entity>
 
 <!-- PETALS -->
@@ -165,7 +152,6 @@ material="shader: flat">
 
 <script>
 
-/* ELEMENTS */
 const video = document.querySelector("#video");
 const overlay = document.querySelector("#overlay");
 const scene = document.querySelector("#scene");
@@ -173,7 +159,7 @@ const scene = document.querySelector("#scene");
 const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
 
-/* START AR */
+/* START */
 arBtn.onclick = async () => {
 
   overlay.style.display = "none";
@@ -183,14 +169,11 @@ arBtn.onclick = async () => {
     video.muted = true;
     await video.play();
 
-    setTimeout(() => {
-      video.muted = false;
-    }, 500);
+    setTimeout(()=> video.muted=false,500);
 
-  } catch (e) {
-    alert("Tap again to start video");
+  } catch {
+    alert("Tap again");
   }
-
 };
 
 /* WEBSITE */
@@ -198,42 +181,33 @@ webBtn.onclick = () => {
   window.open("https://s-weds-r.my.canva.site/", "_blank");
 };
 
-/* PLAY / PAUSE */
+/* CONTROLS */
 const pauseBtn = document.querySelector("#pauseBtn");
 const playIcon = document.querySelector("#playIcon");
 const bar1 = document.querySelector("#bar1");
 const bar2 = document.querySelector("#bar2");
 
-function toggleVideo(e){
-
-  e.preventDefault();
+function toggle(){
 
   if(video.paused){
-
     video.play();
     playIcon.setAttribute("visible", false);
     bar1.setAttribute("visible", true);
     bar2.setAttribute("visible", true);
-
   } else {
-
     video.pause();
     playIcon.setAttribute("visible", true);
     bar1.setAttribute("visible", false);
     bar2.setAttribute("visible", false);
-
   }
-
 }
 
-/* MOBILE + DESKTOP EVENTS */
-["click","touchstart"].forEach(evt => {
-
-  pauseBtn.addEventListener(evt, toggleVideo);
-  playIcon.addEventListener(evt, toggleVideo);
-  bar1.addEventListener(evt, toggleVideo);
-  bar2.addEventListener(evt, toggleVideo);
-
+/* KEY FIX: use mousedown + touchstart */
+["mousedown","touchstart"].forEach(evt=>{
+  pauseBtn.addEventListener(evt, toggle);
+  playIcon.addEventListener(evt, toggle);
+  bar1.addEventListener(evt, toggle);
+  bar2.addEventListener(evt, toggle);
 });
 
 /* PETALS */
@@ -241,7 +215,7 @@ const petals = document.querySelector("#petals");
 
 for(let i=0;i<35;i++){
 
-  let p = document.createElement("a-image");
+  let p=document.createElement("a-image");
 
   p.setAttribute("src","#petal");
   p.setAttribute("scale","0.15 0.15 0.15");
@@ -258,10 +232,6 @@ for(let i=0;i<35;i++){
     dur:4000+Math.random()*2000,
     loop:true
   });
-
-  p.setAttribute("animation__spin",
-    "property: rotation; to: 0 360 360; dur: 3000; loop: true"
-  );
 
   petals.appendChild(p);
 }
