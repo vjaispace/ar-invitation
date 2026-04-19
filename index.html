@@ -24,6 +24,7 @@ body { margin:0; overflow:hidden; }
 
 <body>
 
+<!-- OVERLAY -->
 <div id="overlay" style="
 position:fixed;
 top:0; left:0;
@@ -111,6 +112,8 @@ const playIcon = document.querySelector("#playIcon");
 const bar1 = document.querySelector("#bar1");
 const bar2 = document.querySelector("#bar2");
 
+let isARMode = false;
+
 /* START */
 arBtn.onclick = async () => {
 
@@ -149,22 +152,28 @@ bar2.setAttribute("visible", false);
 
 }
 
-/* MOBILE CLICK (UNCHANGED) */
+/* MOBILE BUTTON (UNCHANGED) */
 btn.addEventListener("click", toggle);
 playIcon.addEventListener("click", toggle);
 bar1.addEventListener("click", toggle);
 bar2.addEventListener("click", toggle);
 
-/* 🔥 FINAL AR FIX */
-scene.addEventListener("loaded", () => {
+/* 🔥 AR MODE DETECTION */
+scene.addEventListener("enter-vr", () => {
+
+isARMode = true;
 
 const canvas = scene.renderer.domElement;
 
-/* touch for AR */
-canvas.addEventListener("touchstart", toggle);
+/* TAP ANYWHERE ONLY IN AR */
+canvas.addEventListener("touchstart", (e) => {
 
-/* fallback */
-canvas.addEventListener("mousedown", toggle);
+/* prevent double trigger from button */
+if(e.target.closest(".a-canvas")) {
+toggle();
+}
+
+});
 
 });
 
