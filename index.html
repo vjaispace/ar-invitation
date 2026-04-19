@@ -57,12 +57,7 @@ gap:20px;
 </div>
 
 <!-- SCENE -->
-<a-scene 
-  id="scene" 
-  visible="false"
-  xr-mode-ui="enabled: false"
-  raycaster="objects: .clickable"
->
+<a-scene id="scene" visible="false" xr-mode-ui="enabled: false">
 
 <a-assets>
 
@@ -81,71 +76,45 @@ preload="auto">
 
 </a-assets>
 
-<!-- CAMERA + CURSOR -->
-<a-camera position="0 1.6 0" cursor="rayOrigin: entity">
+<a-camera position="0 1.6 0">
 
-  <!-- UI BUTTON -->
+  <!-- VISUAL BUTTON (NOT CLICKABLE) -->
   <a-entity position="0 -0.6 -1">
 
-    <!-- BACK -->
     <a-circle
-      id="pauseBtn"
-      class="clickable"
       radius="0.15"
       color="#ffffff"
       opacity="0.6">
     </a-circle>
 
-    <!-- PLAY ICON -->
+    <!-- PLAY -->
     <a-triangle
       id="playIcon"
-      class="clickable"
       visible="false"
       color="#000"
       vertex-a="0.06 0 0"
       vertex-b="-0.04 0.05 0"
       vertex-c="-0.04 -0.05 0"
-      rotation="0 0 0"
       position="0 0 0.01">
     </a-triangle>
 
-    <!-- PAUSE ICON -->
-    <a-box
-      id="bar1"
-      class="clickable"
-      width="0.02"
-      height="0.08"
-      depth="0.01"
-      color="#000"
-      position="-0.03 0 0.01">
-    </a-box>
-
-    <a-box
-      id="bar2"
-      class="clickable"
-      width="0.02"
-      height="0.08"
-      depth="0.01"
-      color="#000"
-      position="0.03 0 0.01">
-    </a-box>
+    <!-- PAUSE -->
+    <a-box id="bar1" width="0.02" height="0.08" depth="0.01" color="#000" position="-0.03 0 0.01"></a-box>
+    <a-box id="bar2" width="0.02" height="0.08" depth="0.01" color="#000" position="0.03 0 0.01"></a-box>
 
   </a-entity>
 
 </a-camera>
 
-<!-- BACKGROUND -->
 <a-sky src="#bg"></a-sky>
 
 <a-light type="ambient" intensity="1.2"></a-light>
 <a-light type="point" position="0 3 -2" intensity="2"></a-light>
 
-<!-- VIDEO -->
 <a-entity position="0 1.6 -3">
   <a-video src="#video" width="1.5" height="2.7" material="shader: flat"></a-video>
 </a-entity>
 
-<!-- PETALS -->
 <a-entity id="petals"></a-entity>
 
 </a-scene>
@@ -158,6 +127,10 @@ const scene = document.querySelector("#scene");
 
 const arBtn = document.querySelector("#arBtn");
 const webBtn = document.querySelector("#webBtn");
+
+const playIcon = document.querySelector("#playIcon");
+const bar1 = document.querySelector("#bar1");
+const bar2 = document.querySelector("#bar2");
 
 /* START */
 arBtn.onclick = async () => {
@@ -181,12 +154,7 @@ webBtn.onclick = () => {
   window.open("https://s-weds-r.my.canva.site/", "_blank");
 };
 
-/* CONTROLS */
-const pauseBtn = document.querySelector("#pauseBtn");
-const playIcon = document.querySelector("#playIcon");
-const bar1 = document.querySelector("#bar1");
-const bar2 = document.querySelector("#bar2");
-
+/* 🎯 UNIVERSAL TOUCH CONTROL */
 function toggle(){
 
   if(video.paused){
@@ -200,15 +168,12 @@ function toggle(){
     bar1.setAttribute("visible", false);
     bar2.setAttribute("visible", false);
   }
+
 }
 
-/* KEY FIX: use mousedown + touchstart */
-["mousedown","touchstart"].forEach(evt=>{
-  pauseBtn.addEventListener(evt, toggle);
-  playIcon.addEventListener(evt, toggle);
-  bar1.addEventListener(evt, toggle);
-  bar2.addEventListener(evt, toggle);
-});
+/* THIS IS THE KEY FIX */
+document.addEventListener("touchstart", toggle);
+document.addEventListener("mousedown", toggle);
 
 /* PETALS */
 const petals = document.querySelector("#petals");
