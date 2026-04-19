@@ -110,26 +110,49 @@ material="shader: flat">
 </a-entity>
 
 <!-- 🎯 AR PLAY/PAUSE BUTTON -->
-<a-entity position="0 1.6 -2.5">
+<a-entity id="uiBtn" position="0 0.3 -2.4">
 
+  <!-- BUTTON BACKGROUND -->
   <a-circle
     id="pauseBtn"
     class="clickable"
-    radius="0.25"
-    color="#000"
-    opacity="0.6"
-    position="0 -0.12 0">
+    radius="0.22"
+    color="#ffffff"
+    opacity="0.6">
   </a-circle>
 
-  <a-text
-    id="pauseIcon"
+  <!-- PLAY ICON -->
+  <a-triangle
+    id="playIcon"
     class="clickable"
-    value="❚❚"
-    align="center"
-    color="#fff"
-    position="0 -0.9 0.01"
-    scale="1.5 1.5 1.5">
-  </a-text>
+    visible="false"
+    color="#000"
+    vertex-a="0 0.08 0"
+    vertex-b="-0.06 -0.08 0"
+    vertex-c="0.06 -0.08 0"
+    position="0 0 0.01">
+  </a-triangle>
+
+  <!-- PAUSE ICON (2 bars) -->
+  <a-box
+    id="bar1"
+    class="clickable"
+    width="0.04"
+    height="0.12"
+    depth="0.01"
+    color="#000"
+    position="-0.05 0 0.01">
+  </a-box>
+
+  <a-box
+    id="bar2"
+    class="clickable"
+    width="0.04"
+    height="0.12"
+    depth="0.01"
+    color="#000"
+    position="0.05 0 0.01">
+  </a-box>
 
 </a-entity>
 
