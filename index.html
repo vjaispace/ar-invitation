@@ -16,8 +16,10 @@ body { margin:0; overflow:hidden; }
   border:none;
 }
 
-#arBtn { background:#d4af37; color:white; }
-#webBtn { background:white; color:black; }
+#arBtn { 
+  background:#d4af37; 
+  color:white; 
+}
 </style>
 
 </head>
@@ -35,10 +37,52 @@ justify-content:center;
 align-items:center;
 background:black;
 z-index:9999;
-gap:20px;">
+gap:30px;">
 
+<!-- AR BUTTON (UNCHANGED) -->
 <button id="arBtn" class="btn-circle">AR</button>
-<button id="webBtn" class="btn-circle">Website</button>
+
+<!-- ✅ UPDATED WEBSITE BUTTON -->
+<button id="webBtn" style="
+background:transparent;
+border:none;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:10px;
+">
+
+<!-- LOGO CIRCLE -->
+<div style="
+width:120px;
+height:120px;
+border-radius:50%;
+background:white;
+display:flex;
+justify-content:center;
+align-items:center;
+box-shadow:0 0 20px rgba(255,255,255,0.6);
+">
+
+<img src="logo.png" style="
+width:70px;
+height:70px;
+object-fit:contain;
+">
+
+</div>
+
+<!-- TEXT -->
+<span style="
+color:white;
+font-size:16px;
+font-weight:500;
+letter-spacing:0.5px;
+">
+Website
+</span>
+
+</button>
 
 </div>
 
@@ -112,8 +156,6 @@ const playIcon = document.querySelector("#playIcon");
 const bar1 = document.querySelector("#bar1");
 const bar2 = document.querySelector("#bar2");
 
-let isARMode = false;
-
 /* START */
 arBtn.onclick = async () => {
 
@@ -152,30 +194,11 @@ bar2.setAttribute("visible", false);
 
 }
 
-/* MOBILE BUTTON (UNCHANGED) */
+/* MOBILE BUTTON */
 btn.addEventListener("click", toggle);
 playIcon.addEventListener("click", toggle);
 bar1.addEventListener("click", toggle);
 bar2.addEventListener("click", toggle);
-
-/* 🔥 AR MODE DETECTION */
-scene.addEventListener("enter-vr", () => {
-
-isARMode = true;
-
-const canvas = scene.renderer.domElement;
-
-/* TAP ANYWHERE ONLY IN AR */
-canvas.addEventListener("touchstart", (e) => {
-
-/* prevent double trigger from button */
-if(e.target.closest(".a-canvas")) {
-toggle();
-}
-
-});
-
-});
 
 /* PETALS */
 const petals = document.querySelector("#petals");
